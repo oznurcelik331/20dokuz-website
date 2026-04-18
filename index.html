@@ -1,0 +1,1857 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<title>20DOKUZ Prodüksiyon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<style>
+/* ─── RESET ─────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{
+  font-family:'Inter',sans-serif;
+  background:#050505;
+  color:#f8f8f8;
+  overflow-x:hidden;
+  cursor:default;
+}
+a{text-decoration:none;color:inherit}
+img{display:block;max-width:100%}
+button{cursor:pointer;background:none;border:none;font-family:inherit}
+
+/* ─── CUSTOM PROPERTIES ────────────────────────────── */
+:root{
+  --bg0:#050505;
+  --bg1:#0c0c0c;
+  --bg2:#141414;
+  --bg3:#1c1c1c;
+  --bg4:#242424;
+  --white:#f8f8f8;
+  --g1:#a0a0a0;
+  --g2:#555;
+  --g3:#2a2a2a;
+  --gold:#c8a96e;
+  --r:20px;
+  --r-sm:10px;
+}
+
+/* ─── SCROLLBAR ─────────────────────────────────────── */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg0)}
+::-webkit-scrollbar-thumb{background:var(--g2);border-radius:2px}
+
+/* ─── GRAIN OVERLAY ──────────────────────────────────── */
+body::after{
+  content:'';
+  position:fixed;inset:0;
+  pointer-events:none;
+  z-index:9998;
+  opacity:.032;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size:200px 200px;
+  animation:grainShift 0.4s steps(1) infinite;
+}
+@keyframes grainShift{
+  0%{transform:translate(0,0)}20%{transform:translate(-3%,-3%)}
+  40%{transform:translate(3%,3%)}60%{transform:translate(-2%,2%)}
+  80%{transform:translate(2%,-2%)}100%{transform:translate(0,0)}
+}
+
+/* ─── CURSOR DOT ────────────────────────────────────── */
+.cursor-dot{
+  width:8px;height:8px;
+  border-radius:50%;
+  background:var(--white);
+  position:fixed;
+  top:0;left:0;
+  pointer-events:none;
+  z-index:9999;
+  transform:translate(-50%,-50%);
+  transition:transform .1s,opacity .3s;
+  mix-blend-mode:difference;
+}
+.cursor-ring{
+  width:36px;height:36px;
+  border-radius:50%;
+  border:1px solid rgba(248,248,248,.35);
+  position:fixed;
+  top:0;left:0;
+  pointer-events:none;
+  z-index:9999;
+  transform:translate(-50%,-50%);
+  transition:transform .18s ease,width .3s,height .3s,opacity .3s;
+}
+
+/* ─── NAVBAR ────────────────────────────────────────── */
+nav{
+  position:fixed;top:0;left:0;right:0;
+  z-index:1000;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:28px 60px;
+  transition:padding .5s,background .5s,backdrop-filter .5s;
+}
+nav.scrolled{
+  padding:16px 60px;
+  background:rgba(5,5,5,.88);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+.nav-logo-wrap{ display:inline-flex;align-items:center; }
+.nav-logo img{
+  height:100px;width:auto;object-fit:contain;display:block;
+  transition:opacity .3s;
+}
+.nav-logo img:hover{ opacity:.8; }
+.nav-links{display:flex;gap:36px;list-style:none}
+.nav-links a{
+  font-size:10.5px;font-weight:500;
+  letter-spacing:.22em;text-transform:uppercase;
+  color:var(--g1);
+  position:relative;transition:color .3s;
+}
+.nav-links a::after{
+  content:'';position:absolute;bottom:-4px;left:0;
+  width:0;height:1px;background:var(--white);
+  transition:width .35s;
+}
+.nav-links a:hover{color:var(--white)}
+.nav-links a:hover::after{width:100%}
+.hamburger{
+  display:none;flex-direction:column;gap:6px;
+  padding:4px;z-index:1001;
+}
+.hamburger span{
+  display:block;width:22px;height:1px;
+  background:var(--white);
+  transition:all .35s;
+}
+.hamburger.open span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
+.hamburger.open span:nth-child(2){opacity:0;transform:scaleX(0)}
+.hamburger.open span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
+
+/* ─── MOBILE MENU ───────────────────────────────────── */
+.mob-menu{
+  display:none;
+  position:fixed;inset:0;
+  background:var(--bg0);
+  z-index:999;
+  flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:32px;
+}
+.mob-menu.open{display:flex}
+.mob-menu a{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(40px,8vw,72px);
+  letter-spacing:.06em;
+  color:var(--g2);
+  transition:color .3s,letter-spacing .3s;
+}
+.mob-menu a:hover{color:var(--white);letter-spacing:.1em}
+
+/* ─── SECTION LABEL ─────────────────────────────────── */
+.sec-label{
+  display:inline-flex;align-items:center;gap:12px;
+  font-size:9.5px;font-weight:600;
+  letter-spacing:.32em;text-transform:uppercase;
+  color:var(--g2);margin-bottom:20px;
+}
+.sec-label::before,.sec-label::after{
+  content:'';display:inline-block;
+  width:20px;height:1px;background:var(--g3);
+}
+
+/* ─── CLIP REVEAL ───────────────────────────────────── */
+.clip-reveal{overflow:hidden;display:block;}
+.clip-reveal-inner{display:block;transform:translateY(110%);will-change:transform;}
+
+/* ─── FADE UP ───────────────────────────────────────── */
+.fu{opacity:0;transform:translateY(40px);will-change:transform,opacity;}
+
+/* ══════════════════════════════════════════════════════
+   HERO
+══════════════════════════════════════════════════════ */
+#hero{
+  position:relative;
+  min-height:100vh;
+  display:flex;align-items:stretch;
+  overflow:hidden;
+  padding:0;
+  background:#000;
+}
+#hero-video{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  object-fit:cover;
+  z-index:1;
+  opacity:.55;
+}
+#hero::before{
+  content:'';
+  position:absolute;inset:0;
+  z-index:2;
+  background:linear-gradient(
+    to bottom,
+    rgba(0,0,0,.45) 0%,
+    rgba(0,0,0,.2) 40%,
+    rgba(0,0,0,.55) 100%
+  );
+}
+.hero-content{
+  position:relative;z-index:4;
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  padding:140px 60px 80px;
+}
+.hero-label{
+  font-size:10px;font-weight:500;
+  letter-spacing:.32em;text-transform:uppercase;
+  color:var(--g2);
+  display:flex;align-items:center;gap:16px;
+  margin-bottom:32px;
+  opacity:0;
+}
+.hero-label-dot{
+  width:5px;height:5px;border-radius:50%;
+  background:var(--gold);
+  animation:pulse 2.5s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+
+.hero-headline{display:block;line-height:.88;will-change:transform;}
+.hero-line-num{font-size:clamp(80px,13vw,180px);}
+.hero-line-name{font-size:clamp(120px,22vw,320px);}
+.hero-line{
+  display:block;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(96px,17vw,220px);
+  letter-spacing:-.01em;
+  overflow:hidden;
+}
+.hero-deg{font-size:.38em;vertical-align:super;-webkit-text-stroke:inherit;line-height:0;}
+.hero-line-inner{display:block;transform:translateY(0);will-change:transform;}
+.hero-line-inner.solid{color:var(--white)}
+.hero-line-inner.outline{-webkit-text-stroke:1px rgba(248,248,248,.25);color:transparent;}
+
+.hero-bottom{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  margin-top:0;opacity:1;
+}
+.hero-slogan{
+  font-size:clamp(11px,1.4vw,14px);font-weight:300;font-style:italic;
+  letter-spacing:.22em;color:var(--g1);line-height:1.9;
+}
+.hero-actions{display:flex;align-items:center;gap:20px;}
+.btn-pill{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:13px 28px;
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:100px;
+  font-size:10.5px;font-weight:600;
+  letter-spacing:.2em;text-transform:uppercase;
+  color:var(--white);
+  background:rgba(255,255,255,.04);
+  backdrop-filter:blur(8px);
+  transition:background .35s,border-color .35s,gap .3s;
+}
+.btn-pill:hover{background:var(--white);color:var(--bg0);border-color:var(--white);gap:16px;}
+.btn-pill-ghost{background:transparent;border-color:rgba(255,255,255,.1);color:var(--g1);}
+.btn-pill-ghost:hover{background:rgba(255,255,255,.06);color:var(--white);border-color:rgba(255,255,255,.2);}
+.btn-arrow{
+  width:14px;height:14px;border-radius:50%;
+  border:1px solid currentColor;
+  display:flex;align-items:center;justify-content:center;
+  font-size:8px;transition:transform .3s;
+}
+.btn-pill:hover .btn-arrow{transform:rotate(-45deg)}
+
+.hero-ambient{
+  position:absolute;right:60px;top:50%;transform:translateY(-50%);
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(180px,24vw,340px);line-height:1;
+  color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.03);
+  pointer-events:none;user-select:none;letter-spacing:-.02em;z-index:3;
+}
+
+.hero-scroll{
+  position:absolute;right:60px;bottom:80px;
+  display:flex;flex-direction:column;align-items:center;gap:12px;z-index:5;
+}
+.hero-scroll span{font-size:9px;font-weight:500;letter-spacing:.3em;text-transform:uppercase;color:var(--g2);writing-mode:vertical-rl;}
+.scroll-line{width:1px;height:60px;background:linear-gradient(to bottom,rgba(255,255,255,.15),transparent);animation:scrollPulse 2s ease-in-out infinite;}
+@keyframes scrollPulse{0%,100%{transform:scaleY(1);opacity:.4}50%{transform:scaleY(.6);opacity:.8}}
+
+/* Video modal */
+.modal-overlay{
+  display:none;position:fixed;inset:0;z-index:9990;
+  background:rgba(0,0,0,.92);
+  align-items:center;justify-content:center;backdrop-filter:blur(12px);
+}
+.modal-overlay.open{display:flex}
+.modal-close{position:absolute;top:32px;right:40px;font-size:28px;color:var(--g1);transition:color .2s;}
+.modal-close:hover{color:var(--white)}
+.modal-content{
+  width:min(900px,90vw);aspect-ratio:16/9;
+  border-radius:var(--r);overflow:hidden;
+  border:1px solid rgba(255,255,255,.08);background:var(--bg2);
+  display:flex;align-items:center;justify-content:center;
+}
+.modal-placeholder{
+  font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:.1em;color:var(--g2);
+  flex-direction:column;gap:16px;display:flex;align-items:center;text-align:center;
+}
+.modal-placeholder span{font-family:'Inter',sans-serif;font-size:13px;font-weight:300;letter-spacing:.15em;color:var(--g2);text-transform:uppercase}
+
+/* Reel Player */
+.reel-player{position:relative;width:100%;height:100%;overflow:hidden;background:#000;}
+.reel-slides{position:relative;width:100%;height:100%;}
+.reel-slide{position:absolute;inset:0;opacity:0;transition:opacity .7s ease;display:flex;align-items:flex-end;}
+.reel-slide.active{opacity:1}
+.reel-slide img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.85) contrast(1.08);}
+.reel-caption{position:relative;z-index:2;padding:28px 32px;background:linear-gradient(to top,rgba(0,0,0,.85) 0%,transparent 100%);width:100%;}
+.reel-tag{font-size:9px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:6px;}
+.reel-caption h3{font-family:'Bebas Neue',sans-serif;font-size:clamp(22px,3vw,36px);letter-spacing:.06em;color:var(--white);margin:0 0 4px;}
+.reel-caption p{font-size:11px;font-weight:300;letter-spacing:.18em;color:var(--g2);margin:0;}
+.reel-controls{position:absolute;bottom:20px;right:24px;z-index:3;display:flex;align-items:center;gap:12px;}
+.reel-prev,.reel-next{width:32px;height:32px;border:1px solid rgba(255,255,255,.2);border-radius:50%;color:var(--white);font-size:18px;line-height:30px;text-align:center;background:rgba(255,255,255,.07);transition:background .2s,border-color .2s;}
+.reel-prev:hover,.reel-next:hover{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.5);}
+.reel-dots{display:flex;gap:6px;align-items:center}
+.reel-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.3);cursor:pointer;transition:background .3s,transform .3s;}
+.reel-dot.active{background:var(--white);transform:scale(1.4)}
+.reel-scanline{position:absolute;inset:0;pointer-events:none;z-index:2;background:repeating-linear-gradient(to bottom,transparent 0px,transparent 3px,rgba(0,0,0,.04) 3px,rgba(0,0,0,.04) 4px);}
+
+/* ══ MARQUEE ══ */
+.marquee-strip{overflow:hidden;padding:18px 0;border-top:1px solid rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.05);background:var(--bg1);position:relative;z-index:2;}
+.marquee-track{display:flex;width:max-content;animation:marquee 30s linear infinite;}
+.marquee-track:hover{animation-play-state:paused}
+.mq-item{display:inline-flex;align-items:center;gap:28px;padding:0 28px;font-size:10px;font-weight:500;letter-spacing:.28em;text-transform:uppercase;color:var(--g2);white-space:nowrap;}
+.mq-sep{width:3px;height:3px;border-radius:50%;background:rgba(200,169,110,.5);flex-shrink:0;}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ══ HAKKIMIZDA ══ */
+#hakkimizda{padding:160px 60px;background:var(--bg1);position:relative;}
+.about-wrap{max-width:1280px;margin:0 auto;}
+.about-top{display:grid;grid-template-columns:2fr 3fr;gap:80px;align-items:start;margin-bottom:100px;}
+.about-big-num{font-family:'Bebas Neue',sans-serif;font-size:clamp(120px,14vw,200px);line-height:.85;-webkit-text-stroke:1px rgba(255,255,255,.12);color:transparent;display:block;margin-bottom:24px;}
+.about-left-sub{font-size:11px;font-weight:500;letter-spacing:.25em;text-transform:uppercase;color:var(--g2);line-height:1.8;}
+.about-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,7vw,96px);line-height:.92;color:var(--white);margin-bottom:36px;}
+.about-title em{font-style:normal;-webkit-text-stroke:1px rgba(255,255,255,.3);color:transparent;}
+.about-body{font-size:15px;font-weight:300;color:var(--g1);line-height:1.95;margin-bottom:20px;}
+.about-body strong{color:var(--white);font-weight:500}
+.about-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:36px;}
+.about-tag{padding:8px 20px;border:1px solid rgba(255,255,255,.08);border-radius:100px;font-size:10px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--g1);transition:all .3s;}
+.about-tag:hover{background:var(--white);color:var(--bg0);border-color:var(--white);}
+.about-stats{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.05);}
+.stat-item{padding:48px 40px;border-right:1px solid rgba(255,255,255,.05);position:relative;}
+.stat-item:last-child{border-right:none}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:clamp(56px,7vw,96px);line-height:1;color:var(--white);display:block;}
+.stat-lbl{font-size:9.5px;font-weight:500;letter-spacing:.28em;text-transform:uppercase;color:var(--g2);margin-top:8px;display:block;}
+
+/* ══ PRODÜKSİYON ══ */
+#prodüksiyon{padding:160px 60px;background:var(--bg0);position:relative;}
+.services-wrap{max-width:1280px;margin:0 auto}
+.services-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:80px;gap:40px;}
+.services-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(64px,9vw,130px);line-height:.9;color:var(--white);}
+.services-title em{font-style:normal;-webkit-text-stroke:1px rgba(255,255,255,.2);color:transparent;}
+.services-sub{max-width:280px;font-size:13px;font-weight:300;color:var(--g2);line-height:1.8;text-align:right;}
+.service-row{display:grid;grid-template-columns:80px 1fr auto;align-items:center;gap:32px;padding:28px 0;border-bottom:1px solid rgba(255,255,255,.05);cursor:default;position:relative;transition:padding .35s;overflow:hidden;}
+.service-row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--white);transform:scaleY(0);transform-origin:bottom;transition:transform .4s ease;}
+.service-row:hover{padding-left:20px;}
+.service-row:hover::before{transform:scaleY(1)}
+.service-row:hover .sr-name{color:var(--white)}
+.sr-num{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.06em;-webkit-text-stroke:1px rgba(255,255,255,.2);color:transparent;transition:color .3s,-webkit-text-stroke .3s;flex-shrink:0;}
+.service-row:hover .sr-num{color:rgba(255,255,255,.08);-webkit-text-stroke:1px rgba(255,255,255,.08);}
+.sr-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,3.5vw,48px);letter-spacing:.04em;color:var(--g1);transition:color .35s;}
+.sr-desc{font-size:11px;font-weight:300;color:var(--g2);letter-spacing:.12em;text-align:right;max-width:200px;line-height:1.6;}
+
+/* ── Hizmet Modal ── */
+.svc-modal{
+  display:none;position:fixed;inset:0;
+  z-index:9993;
+  background:rgba(0,0,0,.88);
+  backdrop-filter:blur(18px);
+  align-items:center;justify-content:center;
+}
+.svc-modal.open{display:flex}
+.svc-modal-inner{
+  position:relative;
+  width:min(1100px,94vw);
+  max-height:90vh;
+  border-radius:var(--r);
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.07);
+  background:var(--bg2);
+  display:grid;
+  grid-template-columns:1fr 1fr;
+}
+.svc-modal-media{
+  position:relative;
+  aspect-ratio:16/9;
+  background:#000;
+  overflow:hidden;
+}
+.svc-modal-media video,
+.svc-modal-media img{
+  width:100%;height:100%;
+  object-fit:cover;
+  display:block;
+}
+.svc-modal-info{
+  padding:48px 44px;
+  display:flex;flex-direction:column;
+  justify-content:center;
+  gap:20px;
+}
+.svc-modal-tag{
+  font-size:9px;font-weight:600;
+  letter-spacing:.32em;text-transform:uppercase;
+  color:var(--g2);
+  display:flex;align-items:center;gap:10px;
+}
+.svc-modal-tag::before{
+  content:'';width:24px;height:1px;background:var(--g3);display:inline-block;
+}
+.svc-modal-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(40px,5vw,68px);
+  line-height:.92;letter-spacing:.03em;
+  color:var(--white);
+}
+.svc-modal-desc{
+  font-size:14px;font-weight:300;
+  color:var(--g1);line-height:1.85;
+}
+.svc-modal-close{
+  position:absolute;top:18px;right:22px;
+  font-size:22px;color:var(--g2);
+  transition:color .2s;z-index:2;
+  cursor:pointer;
+}
+.svc-modal-close:hover{color:var(--white)}
+
+/* Tıklanabilir satır göstergesi */
+.service-row.clickable{cursor:pointer}
+.service-row.clickable .sr-name::after{
+  content:'↗';
+  font-size:.55em;
+  opacity:0;
+  margin-left:10px;
+  transition:opacity .3s,transform .3s;
+  display:inline-block;
+}
+.service-row.clickable:hover .sr-name::after{
+  opacity:.4;transform:translateX(4px);
+}
+
+@media(max-width:860px){
+  .svc-modal-inner{grid-template-columns:1fr}
+  .svc-modal-media{aspect-ratio:16/9}
+  .svc-modal-info{padding:28px 24px}
+}
+.services-categories{
+  display:grid;
+  grid-template-columns:1fr 1px 1fr;
+  gap:0 48px;
+  align-items:start;
+}
+.svc-divider{
+  background:rgba(255,255,255,.06);
+  align-self:stretch;
+}
+.svc-col-header{
+  display:flex;align-items:center;gap:20px;
+  padding:0 0 28px;
+  margin-bottom:8px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.svc-col-num{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:48px;line-height:1;
+  -webkit-text-stroke:1px rgba(255,255,255,.15);
+  color:transparent;
+  flex-shrink:0;
+}
+.svc-col-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(32px,4vw,52px);
+  letter-spacing:.06em;
+  color:var(--white);
+}
+.svc-col .service-row{
+  grid-template-columns:56px 1fr auto;
+}
+
+@media(max-width:900px){
+  .services-categories{grid-template-columns:1fr;gap:48px 0;}
+  .svc-divider{display:none;}
+}
+@media(max-width:768px){
+  .svc-col .service-row{grid-template-columns:40px 1fr;}
+}
+
+/* ══ PROJELER ══ */
+#projeler{padding:160px 60px;background:var(--bg1);}
+.projects-wrap{max-width:1280px;margin:0 auto}
+.projects-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:60px;}
+.projects-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(64px,9vw,120px);line-height:.9;color:var(--white);}
+.projects-count{font-size:11px;font-weight:300;letter-spacing:.2em;color:var(--g2);}
+.proj-grid{display:grid;grid-template-columns:repeat(12,1fr);grid-auto-rows:80px;gap:14px;}
+.proj-card-lg{grid-column:span 7;grid-row:span 5}
+.proj-card-t{grid-column:span 5;grid-row:span 5}
+.proj-card-md{grid-column:span 4;grid-row:span 5}
+.proj-card-sm{grid-column:span 4;grid-row:span 4}
+.proj-card-ph{grid-column:span 4;grid-row:span 4}
+.proj-card{position:relative;overflow:hidden;border-radius:var(--r);cursor:pointer;border:1px solid rgba(255,255,255,.04);background:var(--bg2);}
+.proj-card img,.proj-card video{width:100%;height:100%;object-fit:cover;transition:transform .8s cubic-bezier(.25,.46,.45,.94);display:block;}
+.proj-card:hover img,.proj-card:hover video{transform:scale(1.06)}
+.proj-card-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.85) 0%,rgba(0,0,0,.1) 50%,transparent 100%);display:flex;flex-direction:column;justify-content:flex-end;padding:28px;opacity:0;transition:opacity .4s;}
+.proj-card:hover .proj-card-overlay{opacity:1}
+.pco-cat{font-size:9.5px;font-weight:500;letter-spacing:.3em;text-transform:uppercase;color:var(--g1);margin-bottom:6px;}
+.pco-name{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.05em;color:var(--white);}
+.pco-arrow{position:absolute;top:20px;right:20px;width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;font-size:13px;backdrop-filter:blur(4px);transition:background .3s;}
+.proj-card:hover .pco-arrow{background:var(--white);color:var(--bg0)}
+.proj-ph{border:1px dashed rgba(255,255,255,.08);border-radius:var(--r);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:var(--bg2);cursor:default;transition:border-color .3s,background .3s;}
+.proj-ph:hover{border-color:rgba(255,255,255,.15);background:var(--bg3)}
+.proj-ph-icon{font-size:28px;opacity:.2}
+.proj-ph-lbl{font-size:9px;font-weight:500;letter-spacing:.28em;text-transform:uppercase;color:var(--g2);}
+
+/* ══ NELER YAPTIK ══ */
+#neler-yaptik{padding:160px 60px;background:var(--bg0);}
+.ref-wrap{max-width:1100px;margin:0 auto}
+.ref-header{margin-bottom:80px}
+.ref-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(64px,9vw,120px);line-height:.9;color:var(--white);}
+.ref-tabs-bar{display:flex;gap:0;border-bottom:1px solid rgba(255,255,255,.06);margin-bottom:56px;overflow-x:auto;}
+.ref-tab{padding:14px 32px;font-size:10px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--g2);border-bottom:1px solid transparent;margin-bottom:-1px;transition:color .3s,border-color .3s;white-space:nowrap;}
+.ref-tab.active{color:var(--white);border-bottom-color:var(--white)}
+.ref-tab:hover{color:var(--g1)}
+.ref-panel{display:none}
+.ref-panel.active{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.ref-item{display:flex;align-items:center;gap:16px;padding:18px 22px;background:var(--bg2);border:1px solid rgba(255,255,255,.04);border-radius:var(--r-sm);transition:all .3s;}
+.ref-item:hover{background:var(--bg3);border-color:rgba(255,255,255,.1);transform:translateX(6px);}
+.ref-dot{width:4px;height:4px;border-radius:50%;background:var(--g2);flex-shrink:0;transition:background .3s,transform .3s;}
+.ref-item:hover .ref-dot{background:var(--white);transform:scale(1.5)}
+.ref-name{font-size:13px;font-weight:300;color:var(--g1);line-height:1.4;transition:color .3s;}
+.ref-item:hover .ref-name{color:var(--white)}
+
+/* ══ TEKNOLOJİ/AI ══ */
+#teknoloji-ai{padding:160px 60px;background:var(--bg1);}
+.hw-wrap{max-width:1280px;margin:0 auto}
+.hw-header{margin-bottom:80px}
+.hw-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(64px,9vw,120px);line-height:.9;color:var(--white);}
+.hw-tabs-bar{display:flex;justify-content:center;gap:0;margin-bottom:64px;}
+.hw-tabs-inner{display:inline-flex;border:1px solid rgba(255,255,255,.08);border-radius:100px;overflow:hidden;}
+.hw-tab{padding:12px 36px;font-size:10px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--g2);transition:all .3s;}
+.hw-tab.active{background:var(--white);color:var(--bg0)}
+.hw-tab:not(.active):hover{color:var(--g1)}
+.hw-panel{display:none}
+.hw-panel.active{display:block}
+.holo-devices{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.holo-dev-card{background:var(--bg2);border:1px solid rgba(255,255,255,.05);border-radius:var(--r);overflow:hidden;transition:border-color .4s,transform .4s;}
+.holo-dev-card:hover{border-color:rgba(255,255,255,.15);transform:translateY(-8px);}
+.holo-dev-visual{height:220px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 60%,#0d0d0d,#000);}
+.holo-dev-visual::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 5px,rgba(255,255,255,.012) 5px,rgba(255,255,255,.012) 6px);pointer-events:none;}
+.holo-dev-visual::before{content:'';position:absolute;width:180px;height:80px;bottom:20px;left:50%;transform:translateX(-50%);background:radial-gradient(ellipse,var(--hw-color,rgba(0,200,255,.18)) 0%,transparent 70%);border-radius:50%;filter:blur(12px);animation:hwGlow 3s ease-in-out infinite;}
+@keyframes hwGlow{0%,100%{opacity:.6;transform:translateX(-50%) scaleX(1)}50%{opacity:1;transform:translateX(-50%) scaleX(1.15)}}
+.holo-icon-wrap{width:96px;height:96px;border-radius:50%;border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;position:relative;z-index:1;background:rgba(0,0,0,.3);transition:border-color .4s;}
+.holo-dev-card:hover .holo-icon-wrap{border-color:rgba(255,255,255,.3)}
+.holo-icon{font-size:36px;filter:grayscale(1) brightness(1.4);transition:transform .4s;}
+.holo-dev-card:hover .holo-icon{transform:scale(1.1)}
+.holo-dev-body{padding:24px}
+.holo-dev-name{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.05em;color:var(--white);margin-bottom:8px;}
+.holo-dev-desc{font-size:12px;font-weight:300;color:var(--g2);line-height:1.7;}
+.holo-dev-badge{display:inline-block;margin-top:14px;padding:4px 14px;border:1px solid rgba(255,255,255,.08);border-radius:100px;font-size:9px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--g2);}
+.hw3d-scene{perspective:400px;width:120px;height:120px;position:relative;z-index:1;}
+.hw3d-obj{width:100%;height:100%;transform-style:preserve-3d;animation:hw3dSpin 6s linear infinite;}
+@keyframes hw3dSpin{from{transform:rotateY(0deg) rotateX(12deg)}to{transform:rotateY(360deg) rotateX(12deg)}}
+.hw3d-fan .fan-hub{position:absolute;width:24px;height:24px;background:radial-gradient(#00e5ff,#0077aa);border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);box-shadow:0 0 18px #00e5ff;}
+.hw3d-fan .fan-blade{position:absolute;width:48px;height:14px;background:linear-gradient(90deg,rgba(0,229,255,.9),rgba(0,100,200,.6));border-radius:30px 6px 6px 30px;top:50%;left:50%;transform-origin:4px 7px;box-shadow:0 0 10px rgba(0,229,255,.6);}
+.hw3d-fan .fan-blade:nth-child(1){transform:translateY(-7px) rotate(0deg)}
+.hw3d-fan .fan-blade:nth-child(2){transform:translateY(-7px) rotate(72deg)}
+.hw3d-fan .fan-blade:nth-child(3){transform:translateY(-7px) rotate(144deg)}
+.hw3d-fan .fan-blade:nth-child(4){transform:translateY(-7px) rotate(216deg)}
+.hw3d-fan .fan-blade:nth-child(5){transform:translateY(-7px) rotate(288deg)}
+.hw3d-fan .fan-ring{position:absolute;width:100px;height:100px;border:2px solid rgba(0,229,255,.3);border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);box-shadow:0 0 20px rgba(0,229,255,.2),inset 0 0 20px rgba(0,229,255,.1);}
+.hw3d-pyramid{position:relative;width:80px;height:80px;margin:auto;top:10px;}
+.hw3d-pyramid .face{position:absolute;width:0;height:0;transform-style:preserve-3d;}
+.hw3d-pyramid .face-f{border-left:40px solid transparent;border-right:40px solid transparent;border-bottom:70px solid rgba(180,0,255,.7);top:0;left:0;filter:drop-shadow(0 0 12px rgba(180,0,255,.8));}
+.hw3d-pyramid .glow-base{position:absolute;width:80px;height:20px;bottom:-10px;left:0;background:radial-gradient(ellipse,rgba(180,0,255,.5),transparent 70%);border-radius:50%;filter:blur(6px);}
+.hw3d-pyramid .beam{position:absolute;width:0;height:0;border-left:40px solid transparent;border-right:40px solid transparent;border-top:50px solid rgba(200,100,255,.15);top:70px;left:0;}
+.hw3d-screen{position:relative;width:100px;height:70px;margin:auto;top:12px;}
+.hw3d-screen .screen-body{width:100%;height:60px;background:linear-gradient(135deg,#001a33,#003366);border:2px solid rgba(0,150,255,.6);border-radius:6px;box-shadow:0 0 20px rgba(0,150,255,.4),inset 0 0 20px rgba(0,100,255,.1);overflow:hidden;position:relative;}
+.hw3d-screen .scan-line{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(0,200,255,.8),transparent);animation:screenScan 2s linear infinite;}
+@keyframes screenScan{from{top:0}to{top:100%}}
+.hw3d-screen .screen-grid{position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 12px,rgba(0,150,255,.08) 12px,rgba(0,150,255,.08) 13px),repeating-linear-gradient(0deg,transparent,transparent 10px,rgba(0,150,255,.08) 10px,rgba(0,150,255,.08) 11px);}
+.hw3d-screen .screen-stand{width:8px;height:16px;background:rgba(0,150,255,.4);margin:0 auto;}
+.hw3d-screen .screen-base{width:36px;height:4px;background:rgba(0,150,255,.3);margin:0 auto;border-radius:2px;box-shadow:0 0 8px rgba(0,150,255,.4);}
+
+/* ══ İLETİŞİM ══ */
+#iletisim{padding:160px 60px;background:var(--bg0);}
+.contact-wrap{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;}
+.contact-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(64px,9vw,120px);line-height:.9;color:var(--white);margin-bottom:56px;}
+.contact-map{border-radius:var(--r);overflow:hidden;border:1px solid rgba(255,255,255,.05);margin-bottom:40px;}
+.contact-map iframe{width:100%;height:320px;border:none;filter:grayscale(100%) invert(92%) hue-rotate(185deg) brightness(.9);}
+.contact-info{display:flex;flex-direction:column;gap:16px}
+.ci-row{display:flex;align-items:flex-start;gap:16px;}
+.ci-ico{font-size:16px;margin-top:1px;flex-shrink:0}
+.ci-txt{font-size:13.5px;font-weight:300;color:var(--g1);line-height:1.7;}
+.ci-txt a{color:var(--white);transition:opacity .3s;}
+.ci-txt a:hover{opacity:.6}
+.contact-form-title{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:.05em;color:var(--white);margin-bottom:32px;}
+.fg{margin-bottom:4px}
+.fg input,.fg textarea{width:100%;padding:18px 0;background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.1);color:var(--white);font-family:'Inter',sans-serif;font-size:14px;font-weight:300;outline:none;transition:border-color .3s;resize:none;}
+.fg input::placeholder,.fg textarea::placeholder{color:var(--g2);letter-spacing:.05em;}
+.fg input:focus,.fg textarea:focus{border-bottom-color:rgba(255,255,255,.4);}
+.fg textarea{height:110px;margin-top:18px}
+.btn-send{margin-top:32px;width:100%;padding:18px;background:var(--white);color:var(--bg0);font-family:'Inter',sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.28em;text-transform:uppercase;border-radius:var(--r-sm);transition:background .3s,color .3s;}
+.btn-send:hover{background:var(--g1);}
+
+/* ══ FOOTER ══ */
+footer{background:var(--bg1);border-top:1px solid rgba(255,255,255,.05);padding:72px 60px 36px;}
+.footer-inner{max-width:1280px;margin:0 auto;}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr;gap:60px;margin-bottom:56px;}
+.ft-brand img{height:40px;margin-bottom:20px;filter:brightness(.9)}
+.ft-brand p{font-size:12.5px;font-weight:300;color:var(--g2);line-height:1.85;max-width:280px;}
+.ft-brand-slogan{margin-top:16px;font-size:11px;font-style:italic;color:rgba(200,169,110,.6);letter-spacing:.12em;}
+.ft-col h5{font-size:9.5px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--g2);margin-bottom:20px;}
+.ft-col ul{list-style:none}
+.ft-col li{margin-bottom:12px}
+.ft-col a{font-size:13px;font-weight:300;color:var(--g2);transition:color .3s;}
+.ft-col a:hover{color:var(--white)}
+.socials{display:flex;gap:10px;margin-top:20px}
+.soc-btn{width:34px;height:34px;border:1px solid rgba(255,255,255,.07);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;transition:border-color .3s,background .3s,transform .3s;}
+.soc-btn:hover{border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.05);transform:translateY(-3px);}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.05);padding-top:28px;display:flex;justify-content:space-between;align-items:center;}
+.footer-bottom p{font-size:11px;font-weight:300;color:var(--g2);letter-spacing:.08em;}
+.footer-bottom span{font-size:11px;color:var(--g2);letter-spacing:.15em;}
+
+/* ══ SHOWREEL ══ */
+#showreel{background:var(--bg0);}
+.sr-hero{position:relative;height:min(88vh,680px);overflow:hidden;}
+.sr-hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,#080808 0%,#141414 25%,#0c0c0c 50%,#181818 75%,#0a0a0a 100%);background-size:400% 400%;animation:srGradPulse 10s ease infinite;}
+@keyframes srGradPulse{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.sr-hero-bg::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);background-size:80px 80px;animation:srGridDrift 20s linear infinite;}
+@keyframes srGridDrift{from{background-position:0 0}to{background-position:80px 80px}}
+.sr-hero-overlay{position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 30%,rgba(0,0,0,.65) 100%);pointer-events:none;}
+.sr-hero-scan{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.sr-hero-scan::after{content:'';position:absolute;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.04) 30%,rgba(255,255,255,.07) 50%,rgba(255,255,255,.04) 70%,transparent 100%);animation:srScan 6s ease-in-out infinite;}
+@keyframes srScan{0%{top:-3px;opacity:0}5%{opacity:1}95%{opacity:1}100%{top:100%;opacity:0}}
+.sr-hero-scan::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,255,255,.008) 3px,rgba(255,255,255,.008) 4px);pointer-events:none;}
+.sr-hero-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.5;}
+.sr-hero-content{position:relative;z-index:4;height:100%;display:flex;flex-direction:column;justify-content:flex-end;padding:72px 80px;max-width:900px;}
+.sr-eyebrow{display:inline-flex;align-items:center;gap:12px;font-size:10px;font-weight:600;letter-spacing:.32em;text-transform:uppercase;color:var(--g2);margin-bottom:20px;}
+.sr-eyebrow::before{content:'';display:inline-block;width:28px;height:1px;background:var(--g2);}
+.sr-headline{font-family:'Bebas Neue',sans-serif;font-size:clamp(72px,11vw,160px);line-height:.88;color:var(--white);margin-bottom:28px;letter-spacing:-.01em;}
+.sr-headline em{font-style:normal;-webkit-text-stroke:1px rgba(255,255,255,.22);color:transparent;}
+.sr-sub{font-size:14px;font-weight:300;color:var(--g1);line-height:1.8;max-width:440px;margin-bottom:40px;}
+.sr-play{width:fit-content;gap:14px;font-size:11px;}
+.sr-play-ring{width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;transition:background .3s,border-color .3s;}
+.sr-play:hover .sr-play-ring{background:var(--white);color:var(--bg0);}
+.sr-metrics{position:absolute;right:80px;bottom:72px;z-index:4;display:flex;flex-direction:column;align-items:flex-end;gap:20px;}
+.sr-metric-row{display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
+.sr-metric-val{font-family:'Bebas Neue',sans-serif;font-size:44px;line-height:1;color:var(--white);letter-spacing:.02em;}
+.sr-metric-lbl{font-size:9px;font-weight:500;letter-spacing:.26em;text-transform:uppercase;color:var(--g2);}
+.sr-metric-div{width:1px;height:40px;background:rgba(255,255,255,.08);align-self:flex-end;}
+.sr-live-badge{position:absolute;top:32px;right:40px;z-index:5;display:flex;align-items:center;gap:8px;padding:7px 14px;border:1px solid rgba(239,68,68,.3);border-radius:100px;background:rgba(239,68,68,.06);font-size:9.5px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:rgba(239,68,68,.85);}
+.sr-live-dot{width:5px;height:5px;border-radius:50%;background:#ef4444;box-shadow:0 0 6px #ef4444;animation:livePulse 1.4s ease-in-out infinite;}
+@keyframes livePulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.6)}}
+.sr-strip{overflow:hidden;padding:28px 0;background:var(--bg1);border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04);position:relative;}
+.sr-strip::before,.sr-strip::after{content:'';position:absolute;top:0;bottom:0;width:100px;z-index:2;pointer-events:none;}
+.sr-strip::before{left:0;background:linear-gradient(to right,var(--bg1),transparent);}
+.sr-strip::after{right:0;background:linear-gradient(to left,var(--bg1),transparent);}
+.sr-strip-track{display:flex;gap:14px;width:max-content;animation:filmScroll 38s linear infinite;padding:0 7px;}
+.sr-strip-track:hover{animation-play-state:paused}
+@keyframes filmScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.sr-thumb{width:272px;height:162px;border-radius:14px;overflow:hidden;flex-shrink:0;position:relative;border:1px solid rgba(255,255,255,.05);cursor:pointer;transition:transform .45s cubic-bezier(.25,.46,.45,.94),border-color .4s;background:var(--bg3);}
+.sr-thumb:hover{transform:scale(1.055) translateY(-4px);border-color:rgba(255,255,255,.16);}
+.sr-thumb img{width:100%;height:100%;object-fit:cover;transition:transform .6s ease;display:block;}
+.sr-thumb:hover img{transform:scale(1.06)}
+.sr-thumb-grad{background:linear-gradient(125deg,#111 0%,#1c1c1c 40%,#0e0e0e 70%,#181818 100%);background-size:300% 300%;animation:srGradPulse 7s ease infinite;}
+.sr-thumb-grad2{background:linear-gradient(125deg,#0d0d0d 0%,#1a1a1a 35%,#111 65%,#151515 100%);background-size:300% 300%;animation:srGradPulse 9s ease infinite 1.5s;}
+.sr-thumb-grad3{background:linear-gradient(125deg,#0f0f0f 0%,#1e1e1e 40%,#0c0c0c 70%,#181818 100%);background-size:300% 300%;animation:srGradPulse 6s ease infinite 3s;}
+.sr-thumb-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:36px;opacity:.15;}
+.sr-thumb::before{content:attr(data-cat);position:absolute;top:10px;left:10px;z-index:3;font-size:8.5px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--g2);padding:4px 10px;background:rgba(0,0,0,.55);border-radius:100px;border:1px solid rgba(255,255,255,.07);backdrop-filter:blur(4px);}
+.sr-thumb-label{position:absolute;bottom:0;left:0;right:0;z-index:3;padding:36px 14px 12px;background:linear-gradient(to top,rgba(0,0,0,.75),transparent);font-size:11px;font-weight:400;color:rgba(248,248,248,.8);letter-spacing:.04em;}
+.sr-bottom{padding:28px 80px;background:var(--bg0);display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(255,255,255,.04);}
+.sr-bottom-text{font-size:13px;font-weight:300;color:var(--g2);letter-spacing:.04em;}
+.sr-bottom-text strong{color:var(--g1);font-weight:500}
+.sr-bottom-stats{display:flex;align-items:center;gap:16px;font-size:10px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--g2);}
+.sr-sep{color:var(--g3)}
+
+/* ── Video Lightbox ── */
+.vid-lightbox{display:none;position:fixed;inset:0;z-index:9995;background:rgba(0,0,0,.95);align-items:center;justify-content:center;backdrop-filter:blur(16px);}
+.vid-lightbox.open{display:flex}
+.vid-lb-inner{position:relative;width:min(960px,92vw);aspect-ratio:16/9;border-radius:var(--r);overflow:hidden;border:1px solid rgba(255,255,255,.08);background:#000;}
+.vid-lb-inner video{width:100%;height:100%;object-fit:contain;display:block;}
+.vid-lb-close{position:absolute;top:20px;right:28px;font-size:26px;color:var(--g1);transition:color .2s;z-index:2;cursor:pointer;}
+.vid-lb-close:hover{color:var(--white)}
+.vid-lb-title{position:absolute;bottom:0;left:0;right:0;padding:40px 24px 18px;background:linear-gradient(to top,rgba(0,0,0,.8),transparent);font-size:10px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--g1);}
+/* Play overlay on thumb */
+.sr-thumb .play-overlay{position:absolute;inset:0;z-index:4;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s;background:rgba(0,0,0,.3);}
+.sr-thumb:hover .play-overlay{opacity:1}
+.play-btn-circle{width:52px;height:52px;border-radius:50%;border:2px solid rgba(255,255,255,.85);background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;font-size:20px;backdrop-filter:blur(4px);transition:background .3s,transform .3s;}
+.sr-thumb:hover .play-btn-circle{background:rgba(255,255,255,.15);transform:scale(1.1);}
+
+/* ─── LANG SWITCHER ──────────────────────────────── */
+.lang-switcher{position:relative;margin-right:12px;}
+.lang-btn{
+  display:flex;align-items:center;gap:6px;
+  padding:7px 14px;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:100px;
+  font-size:10px;font-weight:600;letter-spacing:.18em;
+  color:var(--g1);transition:color .3s,border-color .3s;
+}
+.lang-btn:hover{color:var(--white);border-color:rgba(255,255,255,.3)}
+.lang-globe{font-size:12px}
+.lang-arrow{opacity:.5;font-size:9px}
+.lang-dropdown{
+  display:none;position:absolute;top:calc(100% + 8px);right:0;
+  background:var(--bg2);border:1px solid rgba(255,255,255,.08);
+  border-radius:var(--r-sm);overflow:hidden;min-width:120px;
+  z-index:1010;box-shadow:0 8px 24px rgba(0,0,0,.5);
+}
+.lang-dropdown.open{display:block}
+.lang-opt{
+  display:block;width:100%;padding:10px 16px;text-align:left;
+  font-size:11px;font-weight:500;letter-spacing:.1em;color:var(--g1);
+  transition:background .2s,color .2s;
+}
+.lang-opt:hover{background:var(--bg3);color:var(--white)}
+.lang-opt.active{color:var(--white);font-weight:700}
+
+/* ─── RTL (Arabic) ───────────────────────────────── */
+html[dir="rtl"] nav{flex-direction:row-reverse}
+html[dir="rtl"] .nav-links{flex-direction:row-reverse}
+html[dir="rtl"] .about-top{direction:rtl}
+html[dir="rtl"] .about-tags{direction:rtl}
+html[dir="rtl"] .services-header{flex-direction:row-reverse}
+html[dir="rtl"] .services-categories{direction:rtl}
+html[dir="rtl"] .service-row{direction:rtl}
+html[dir="rtl"] .sr-desc{text-align:left}
+html[dir="rtl"] .svc-modal-info{direction:rtl;text-align:right}
+html[dir="rtl"] .contact-wrap{direction:rtl}
+html[dir="rtl"] .contact-form-title{text-align:right}
+html[dir="rtl"] .fg input,html[dir="rtl"] .fg textarea{text-align:right}
+html[dir="rtl"] .footer-top{direction:rtl}
+html[dir="rtl"] .footer-bottom{flex-direction:row-reverse}
+html[dir="rtl"] .mob-menu{direction:rtl}
+html[dir="rtl"] .service-row::before{left:auto;right:0}
+html[dir="rtl"] .service-row:hover{padding-left:0;padding-right:20px}
+html[dir="rtl"] .hero-bottom{direction:rtl}
+html[dir="rtl"] .ref-tabs-bar{direction:rtl}
+html[dir="rtl"] .sr-hero-content{direction:rtl;text-align:right}
+
+/* ── RESPONSIVE ── */
+
+/* ─── LANG SWITCHER MOBİL ──────────────────────────── */
+@media(max-width:900px){
+  .lang-switcher{margin-right:0;order:-1}
+  .lang-btn{padding:6px 10px;font-size:9px}
+  nav{padding:16px 20px;gap:8px}
+  nav .nav-logo img{height:64px}
+}
+
+/* ─── TABLET (≤1024px) ──────────────────────────────── */
+@media(max-width:1024px){
+  nav{padding:20px 32px}
+  .holo-devices{grid-template-columns:repeat(2,1fr)}
+  .about-top{grid-template-columns:1fr 2fr;gap:48px}
+  #hero{padding:0}
+  .hero-content{padding:100px 40px 60px}
+  #hakkimizda,#prodüksiyon,#neler-yaptik,#teknoloji-ai,#iletisim{padding:100px 40px}
+  footer{padding:56px 40px 28px}
+  .sr-hero-content{padding:48px 40px}
+  .sr-metrics{right:40px;bottom:48px}
+  .sr-bottom{padding:18px 40px}
+  .footer-top{grid-template-columns:2fr 1fr;gap:40px}
+  .services-categories{gap:0 32px}
+  .contact-wrap{gap:48px}
+}
+
+/* ─── TABLET KÜÇÜK (≤900px) ─────────────────────────── */
+@media(max-width:900px){
+  nav{padding:16px 24px;gap:8px}
+  nav.scrolled{padding:12px 24px}
+  .nav-links{display:none}
+  .hamburger{display:flex}
+  #hero{min-height:100svh;padding:0}
+  .hero-content{padding:110px 28px 64px}
+  .hero-ambient{display:none}
+  .hero-scroll{right:24px;bottom:64px}
+  .hero-bottom{flex-direction:column;align-items:flex-start;gap:20px}
+  #hakkimizda,#prodüksiyon,#neler-yaptik,#teknoloji-ai,#iletisim{padding:80px 24px}
+  footer{padding:48px 24px 28px}
+  .about-top{grid-template-columns:1fr;gap:40px}
+  .about-big-num{font-size:clamp(80px,18vw,140px)}
+  .services-header{flex-direction:column;align-items:flex-start;gap:16px}
+  .services-sub{max-width:100%;text-align:left}
+  .services-categories{grid-template-columns:1fr;gap:40px 0}
+  .svc-divider{display:none}
+  .about-stats{grid-template-columns:1fr 1fr}
+  .about-stats .stat-item:last-child{grid-column:span 2}
+  .holo-devices{grid-template-columns:repeat(2,1fr)}
+  .contact-wrap{grid-template-columns:1fr;gap:48px}
+  .footer-top{grid-template-columns:1fr;gap:36px}
+  .footer-bottom{flex-direction:column;gap:8px;text-align:center}
+  .sr-hero{height:min(65vh,440px)}
+  .sr-hero-content{padding:28px 24px;max-width:100%}
+  .sr-metrics{display:none}
+  .sr-live-badge{top:20px;right:20px}
+  .sr-bottom{padding:14px 24px;flex-direction:column;gap:8px;text-align:center}
+  .sr-strip{padding:20px 0}
+  .svc-modal-inner{grid-template-columns:1fr}
+  .svc-modal-media{aspect-ratio:16/9;max-height:260px}
+  .svc-modal-info{padding:24px 20px}
+}
+
+/* ─── MOBİL (≤768px) ────────────────────────────────── */
+@media(max-width:768px){
+  /* Navbar */
+  nav{padding:14px 16px}
+  nav .nav-logo img{height:52px}
+
+  /* Hero */
+  #hero{min-height:100svh;padding:0}
+  .hero-content{padding:90px 20px 56px}
+  .hero-scroll{display:none}
+  .hero-line{font-size:clamp(60px,18vw,110px)}
+  .hero-line-name{font-size:clamp(80px,24vw,160px)}
+  .hero-bottom{flex-direction:column;align-items:flex-start;gap:16px;margin-top:24px}
+  .hero-actions{flex-direction:column;align-items:stretch;gap:10px;width:100%}
+  .btn-pill{width:100%;justify-content:center;padding:14px 20px}
+  .hero-slogan{font-size:12px}
+
+  /* Showreel */
+  .sr-hero{height:min(55vh,380px)}
+  .sr-headline{font-size:clamp(52px,14vw,96px)}
+  .sr-sub{font-size:12px;max-width:100%}
+  .sr-eyebrow{font-size:9px}
+  .sr-thumb{width:200px;height:120px;border-radius:10px}
+
+  /* Hakkımızda */
+  #hakkimizda,#prodüksiyon,#neler-yaptik,#teknoloji-ai,#iletisim{padding:60px 16px}
+  .about-top{grid-template-columns:1fr;gap:28px}
+  .about-big-num{font-size:clamp(72px,22vw,130px)}
+  .about-stats{grid-template-columns:1fr}
+  .about-stats .stat-item:last-child{grid-column:span 1}
+  .stat-item{padding:28px 20px}
+  .about-title{font-size:clamp(40px,11vw,72px)}
+
+  /* Servisler */
+  .services-title{font-size:clamp(48px,13vw,96px)}
+  .service-row{grid-template-columns:44px 1fr;gap:12px;padding:18px 0}
+  .sr-desc{display:none}
+  .svc-col-title{font-size:clamp(24px,7vw,40px)}
+
+  /* Teknoloji */
+  .holo-devices{grid-template-columns:1fr}
+  .hw-title{font-size:clamp(48px,13vw,96px)}
+  .holo-dev-visual{height:180px}
+
+  /* Neler Yaptık */
+  .ref-title{font-size:clamp(48px,13vw,96px)}
+  .ref-panel.active{grid-template-columns:1fr}
+  .ref-tabs-bar{gap:0;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .ref-tab{padding:12px 18px;font-size:9px}
+
+  /* İletişim */
+  .contact-title{font-size:clamp(48px,13vw,96px)}
+  .contact-map iframe{height:240px}
+  .fg input,.fg textarea{font-size:16px} /* iOS zoom önleme */
+
+  /* Footer */
+  footer{padding:40px 16px 24px}
+  .footer-top{grid-template-columns:1fr;gap:28px}
+  .footer-bottom{flex-direction:column;gap:8px;text-align:center}
+
+  /* Modaller */
+  .modal-content{width:100vw;height:56vw;border-radius:0;border:none;aspect-ratio:16/9}
+  .vid-lb-inner{width:100vw;border-radius:0;aspect-ratio:16/9}
+  .svc-modal-inner{max-height:100dvh;overflow-y:auto;border-radius:0;width:100vw}
+}
+
+/* ─── MOBİL KÜÇÜK (≤480px) ──────────────────────────── */
+@media(max-width:480px){
+  nav{padding:12px 14px}
+  nav .nav-logo img{height:44px}
+  .hero-content{padding:80px 14px 48px}
+  #hakkimizda,#prodüksiyon,#neler-yaptik,#teknoloji-ai,#iletisim{padding:48px 14px}
+  footer{padding:36px 14px 20px}
+  .sr-hero{height:min(50vh,320px)}
+  .sr-hero-content{padding:20px 14px}
+  .sr-thumb{width:170px;height:102px}
+  .lang-btn{padding:5px 8px;font-size:8.5px;letter-spacing:.1em}
+  .mob-menu a{font-size:clamp(32px,10vw,56px)}
+}
+
+/* ─── DOKUNMATIK HEDEFLER ────────────────────────────── */
+@media(hover:none) and (pointer:coarse){
+  .btn-pill{min-height:48px}
+  .lang-btn{min-height:44px}
+  .ref-tab{min-height:44px;padding:14px 20px}
+  .hw-tab{min-height:44px}
+  .service-row.clickable{min-height:52px}
+  .mob-menu a{padding:8px 0}
+  /* Masaüstü cursor efektlerini gizle */
+  .cursor-dot,.cursor-ring{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div class="cursor-dot" id="cur-dot"></div>
+<div class="cursor-ring" id="cur-ring"></div>
+
+<!-- HİZMET DETAY MODAL -->
+<div class="svc-modal" id="svc-modal">
+  <div class="svc-modal-inner">
+    <button class="svc-modal-close" onclick="closeSvcModal()">✕</button>
+    <div class="svc-modal-media" id="svc-modal-media"></div>
+    <div class="svc-modal-info">
+      <span class="svc-modal-tag" id="svc-modal-tag"></span>
+      <h2 class="svc-modal-title" id="svc-modal-title"></h2>
+      <p class="svc-modal-desc" id="svc-modal-desc"></p>
+    </div>
+  </div>
+</div>
+
+<!-- VIDEO LİGHTBOX -->
+<div class="vid-lightbox" id="vid-lightbox">
+  <div class="vid-lb-inner">
+    <button class="vid-lb-close" onclick="closeVidLb()">✕</button>
+    <video id="vid-lb-player" controls>
+      <source id="vid-lb-src" src="" type="video/mp4">
+    </video>
+    <div class="vid-lb-title" id="vid-lb-title"></div>
+  </div>
+</div>
+
+<!-- VIDEO MODAL -->
+<div class="modal-overlay" id="reel-modal">
+  <button class="modal-close" onclick="closeReel()">✕</button>
+  <div class="modal-content">
+    <div class="reel-player">
+      <div class="reel-slides" id="reel-slides">
+        <div class="reel-slide active">
+          <video autoplay muted loop playsinline preload="none" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.85) contrast(1.08);">
+            <source src="images/proje1.mp4" type="video/mp4">
+          </video>
+          <div class="reel-caption">
+            <span class="reel-tag">Prodüksiyon</span>
+            <h3>Proje 1</h3>
+            <p>20Dokuz · Profesyonel Prodüksiyon</p>
+          </div>
+        </div>
+      </div>
+      <div class="reel-controls">
+        <button class="reel-prev" onclick="reelSlide(-1)">‹</button>
+        <div class="reel-dots" id="reel-dots">
+          <span class="reel-dot active" onclick="reelGoTo(0)"></span>
+        </div>
+        <button class="reel-next" onclick="reelSlide(1)">›</button>
+      </div>
+      <div class="reel-scanline"></div>
+    </div>
+  </div>
+</div>
+
+<!-- NAVBAR -->
+<nav id="nav">
+  <div class="nav-logo">
+    <a href="#hero" class="nav-logo-wrap">
+      <img src="images/logo-new.png" alt="20Dokuz Prodüksiyon"/>
+    </a>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#hero"         data-i18n="nav_home">Ana Sayfa</a></li>
+    <li><a href="#hakkimizda"   data-i18n="nav_about">Hakkımızda</a></li>
+    <li><a href="#prodüksiyon"  data-i18n="nav_prod">Prodüksiyon</a></li>
+    <li><a href="#neler-yaptik" data-i18n="nav_ref">Referanslar</a></li>
+    <li><a href="#teknoloji-ai" data-i18n="nav_tech">Teknoloji/AI Yazılım</a></li>
+    <li><a href="#iletisim"     data-i18n="nav_contact">İletişim</a></li>
+  </ul>
+  <div class="lang-switcher" id="lang-switcher">
+    <button class="lang-btn" onclick="toggleLangMenu()">
+      <span class="lang-globe">🌐</span>
+      <span id="lang-current">TR</span>
+      <span class="lang-arrow">▾</span>
+    </button>
+    <div class="lang-dropdown" id="lang-dropdown">
+      <button onclick="switchLang('tr')" class="lang-opt active" id="lo-tr">Türkçe</button>
+      <button onclick="switchLang('en')" class="lang-opt" id="lo-en">English</button>
+      <button onclick="switchLang('ar')" class="lang-opt" id="lo-ar">العربية</button>
+    </div>
+  </div>
+  <button class="hamburger" id="ham" aria-label="Menü">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBİL MENÜ -->
+<div class="mob-menu" id="mob-menu">
+  <a href="#hero"         data-i18n="nav_home"    onclick="closeMob()">Ana Sayfa</a>
+  <a href="#hakkimizda"   data-i18n="nav_about"   onclick="closeMob()">Hakkımızda</a>
+  <a href="#prodüksiyon"  data-i18n="nav_prod"    onclick="closeMob()">Prodüksiyon</a>
+  <a href="#neler-yaptik" data-i18n="nav_ref"     onclick="closeMob()">Referanslar</a>
+  <a href="#iletisim"     data-i18n="nav_contact" onclick="closeMob()">İletişim</a>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+  <video id="hero-video" autoplay muted loop playsinline preload="metadata">
+    <source src="images/hero-bg.mp4" type="video/mp4">
+  </video>
+  <div class="hero-content">
+    <div class="hero-headline" id="hl-head">
+      <div class="hero-line hero-line-num">
+        <span class="hero-line-inner solid">20<span class="hero-deg">°</span></span>
+      </div>
+      <div class="hero-line hero-line-name">
+        <span class="hero-line-inner outline">DOKUZ</span>
+      </div>
+    </div>
+    <div class="hero-bottom" id="hl-bot">
+      <p class="hero-slogan" data-i18n="hero_slogan">" Her Şey<br>Zamanında Olur "</p>
+      <div class="hero-actions">
+        <a href="#hakkimizda" class="btn-pill">
+          <span data-i18n="hero_btn1">Keşfet</span> <span class="btn-arrow">↗</span>
+        </a>
+        <button class="btn-pill btn-pill-ghost" onclick="openReel()" data-i18n="hero_btn2">▶ &nbsp;Demo Reel</button>
+      </div>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <span>scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-strip">
+  <div class="marquee-track">
+    <span class="mq-item">Sinema<span class="mq-sep"></span></span>
+    <span class="mq-item">TV Programı<span class="mq-sep"></span></span>
+    <span class="mq-item">Belgesel<span class="mq-sep"></span></span>
+    <span class="mq-item">Reklam &amp; Tanıtım<span class="mq-sep"></span></span>
+    <span class="mq-item">Animasyon<span class="mq-sep"></span></span>
+    <span class="mq-item">Video Mapping<span class="mq-sep"></span></span>
+    <span class="mq-item">Hologram<span class="mq-sep"></span></span>
+    <span class="mq-item">FPV Drone<span class="mq-sep"></span></span>
+    <span class="mq-item">4K Hava Çekimi<span class="mq-sep"></span></span>
+    <span class="mq-item">Post Prodüksiyon<span class="mq-sep"></span></span>
+    <span class="mq-item">Sinema<span class="mq-sep"></span></span>
+    <span class="mq-item">TV Programı<span class="mq-sep"></span></span>
+    <span class="mq-item">Belgesel<span class="mq-sep"></span></span>
+    <span class="mq-item">Reklam &amp; Tanıtım<span class="mq-sep"></span></span>
+    <span class="mq-item">Animasyon<span class="mq-sep"></span></span>
+    <span class="mq-item">Video Mapping<span class="mq-sep"></span></span>
+    <span class="mq-item">Hologram<span class="mq-sep"></span></span>
+    <span class="mq-item">FPV Drone<span class="mq-sep"></span></span>
+    <span class="mq-item">4K Hava Çekimi<span class="mq-sep"></span></span>
+    <span class="mq-item">Post Prodüksiyon<span class="mq-sep"></span></span>
+  </div>
+</div>
+
+<!-- SHOWREEL -->
+<section id="showreel">
+  <div class="sr-hero">
+    <div class="sr-hero-bg"></div>
+    <video class="sr-hero-video" autoplay muted loop playsinline preload="metadata">
+      <source src="images/showreel-bg.mp4" type="video/mp4">
+    </video>
+    <div class="sr-hero-overlay"></div>
+    <div class="sr-hero-scan"></div>
+    <div class="sr-hero-content">
+      <span class="sr-eyebrow" data-i18n="sr_eyebrow">Showreel · 2024</span>
+      <h2 class="sr-headline"><span data-i18n="sr_headline">Görüntüler</span><br/><em data-i18n="sr_headline_em">Konuşur</em></h2>
+      <p class="sr-sub" data-i18n="sr_sub">Sinema kalitesinde prodüksiyondan hologram teknolojisine —<br/>her kare bir hikâye anlatır.</p>
+      <button class="btn-pill sr-play" onclick="openReel()">
+        <span class="sr-play-ring">▶</span>
+        <span data-i18n="sr_play">Reel'i İzle</span>
+      </button>
+    </div>
+    <div class="sr-metrics">
+      <div class="sr-metric-row">
+        <span class="sr-metric-val">4K</span>
+        <span class="sr-metric-lbl" data-i18n="sr_lbl_res">Çözünürlük</span>
+      </div>
+      <div class="sr-metric-div"></div>
+      <div class="sr-metric-row">
+        <span class="sr-metric-val">HD</span>
+        <span class="sr-metric-lbl" data-i18n="sr_lbl_qual">Kalite</span>
+      </div>
+      <div class="sr-metric-div"></div>
+      <div class="sr-metric-row">
+        <span class="sr-metric-val">50<span style="font-size:.5em;opacity:.6">+</span></span>
+        <span class="sr-metric-lbl" data-i18n="sr_lbl_proj">Proje</span>
+      </div>
+    </div>
+    <div class="sr-live-badge">
+      <span class="sr-live-dot"></span>
+      <span data-i18n="sr_live">CANLI</span>
+    </div>
+  </div>
+
+  <div class="sr-strip">
+    <div class="sr-strip-track" id="sr-track">
+      <div class="sr-thumb" data-cat="Hologram" onclick="openVidLb('images/hologram5.mp4','Hologram Prodüksiyon')">
+        <video autoplay muted loop playsinline preload="none" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"><source src="images/hologram5.mp4" type="video/mp4"></video>
+        <div class="play-overlay"><div class="play-btn-circle">▶</div></div>
+        <div class="sr-thumb-label">Hologram Prodüksiyon</div>
+      </div>
+      <div class="sr-thumb" data-cat="Hologram" onclick="openVidLb('images/hologram6.mp4','Hologram Gösterisi')">
+        <video autoplay muted loop playsinline preload="none" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"><source src="images/hologram6.mp4" type="video/mp4"></video>
+        <div class="play-overlay"><div class="play-btn-circle">▶</div></div>
+        <div class="sr-thumb-label">Hologram Gösterisi</div>
+      </div>
+      <div class="sr-thumb" data-cat="Hologram" onclick="openVidLb('images/hologram1.mp4','3D Hologram')">
+        <video autoplay muted loop playsinline preload="none" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"><source src="images/hologram1.mp4" type="video/mp4"></video>
+        <div class="play-overlay"><div class="play-btn-circle">▶</div></div>
+        <div class="sr-thumb-label">3D Hologram</div>
+      </div>
+      <div class="sr-thumb" data-cat="Hologram" onclick="openVidLb('images/hologram7.mp4','Hologram Teknolojisi')">
+        <video autoplay muted loop playsinline preload="none" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"><source src="images/hologram7.mp4" type="video/mp4"></video>
+        <div class="play-overlay"><div class="play-btn-circle">▶</div></div>
+        <div class="sr-thumb-label">Hologram Teknolojisi</div>
+      </div>
+      <!-- Döngü için tekrar -->
+      <div class="sr-thumb" data-cat="Hologram" onclick="openVidLb('images/hologram5.mp4','Hologram Prodüksiyon')">
+        <video autoplay muted loop playsinline preload="none" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"><source src="images/hologram5.mp4" type="video/mp4"></video>
+        <div class="play-overlay"><div class="play-btn-circle">▶</div></div>
+        <div class="sr-thumb-label">Hologram Prodüksiyon</div>
+      </div>
+      <div class="sr-thumb" data-cat="Hologram" onclick="openVidLb('images/hologram6.mp4','Hologram Gösterisi')">
+        <video autoplay muted loop playsinline preload="none" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"><source src="images/hologram6.mp4" type="video/mp4"></video>
+        <div class="play-overlay"><div class="play-btn-circle">▶</div></div>
+        <div class="sr-thumb-label">Hologram Gösterisi</div>
+      </div>
+      <div class="sr-thumb" data-cat="Hologram" onclick="openVidLb('images/hologram1.mp4','3D Hologram')">
+        <video autoplay muted loop playsinline preload="none" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"><source src="images/hologram1.mp4" type="video/mp4"></video>
+        <div class="play-overlay"><div class="play-btn-circle">▶</div></div>
+        <div class="sr-thumb-label">3D Hologram</div>
+      </div>
+      <div class="sr-thumb" data-cat="Hologram" onclick="openVidLb('images/hologram7.mp4','Hologram Teknolojisi')">
+        <video autoplay muted loop playsinline preload="none" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"><source src="images/hologram7.mp4" type="video/mp4"></video>
+        <div class="play-overlay"><div class="play-btn-circle">▶</div></div>
+        <div class="sr-thumb-label">Hologram Teknolojisi</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sr-bottom">
+    <div class="sr-bottom-stats">
+      <span data-i18n="sr_stat1">15+ Hizmet</span>
+      <span class="sr-sep">·</span>
+      <span data-i18n="sr_stat2">50+ Proje</span>
+      <span class="sr-sep">·</span>
+      <span data-i18n="sr_stat3">HD / 4K</span>
+    </div>
+  </div>
+</section>
+
+<!-- HAKKIMIZDA -->
+<section id="hakkimizda">
+  <div class="about-wrap">
+    <div class="about-top">
+      <div class="about-left fu">
+        <span class="about-big-num">13</span>
+        <p class="about-left-sub" data-i18n="about_sub">Yıllık Deneyim<br/>ile Sektörde</p>
+      </div>
+      <div class="about-right">
+        <div class="sec-label fu" data-i18n="about_label">Biz Kimiz</div>
+        <h2 class="about-title fu"><span data-i18n="about_title">Hikâyeleri</span><br/><em data-i18n="about_title_em">Görüntüye</em><br/><span data-i18n="about_title2">Dökme Sanatı</span></h2>
+        <p class="about-body fu" data-i18n="about_p1"><strong>2011'den bu yana</strong> yayın dünyasında kesintisiz üretim yapan 20DOKUZ Prodüksiyon, değişen teknolojiyi sahne arkasının her köşesine taşıyan, genç ve yaratıcı bir ekiple hikâye anlatıcılığını yeniden tanımlıyor.</p>
+        <p class="about-body fu" data-i18n="about_p2">Kurumsal müşteriler ve yayıncılar için <strong>Televizyon Reklamları, Belgeseller, Tanıtım Filmleri, Animasyonlar</strong> ve en ileri teknoloji olan <strong>Hologram &amp; Video Mapping</strong> projelerini hayata geçiriyoruz.</p>
+        <p class="about-body fu" data-i18n="about_p3">Unutulmuşları gün yüzüne çıkarmak, farklılıkları görünür kılmak ve insanların paylaşmaktan zevk aldığı <strong>güçlü hikâyeler</strong> yaratmak — bu felsefe bizi var eden motor güçtür.</p>
+        <div class="about-tags fu">
+          <span class="about-tag" data-i18n="about_tag1">Vizyon</span>
+          <span class="about-tag" data-i18n="about_tag2">Yaratıcılık</span>
+          <span class="about-tag" data-i18n="about_tag3">Teknoloji</span>
+          <span class="about-tag" data-i18n="about_tag4">Müşteri Odaklı</span>
+          <span class="about-tag" data-i18n="about_tag5">Ekip Ruhu</span>
+        </div>
+      </div>
+    </div>
+    <div class="about-stats">
+      <div class="stat-item fu"><span class="stat-num" data-target="13">0</span><span class="stat-lbl" data-i18n="stat_lbl1">Yıl Deneyim</span></div>
+      <div class="stat-item fu"><span class="stat-num" data-target="50">0</span><span class="stat-lbl" data-i18n="stat_lbl2">Tamamlanan Proje</span></div>
+      <div class="stat-item fu"><span class="stat-num" data-target="30">0</span><span class="stat-lbl" data-i18n="stat_lbl3">Kurumsal Müşteri</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRODÜKSİYON -->
+<section id="prodüksiyon">
+  <div class="services-wrap">
+    <div class="services-header">
+      <h2 class="services-title fu"><span data-i18n="svc_title">Neler</span><br/><em data-i18n="svc_title_em">Yaparız</em></h2>
+      <p class="services-sub fu" data-i18n="svc_sub">Sinematik üretimden hologram teknolojisine,<br/>her projede mükemmeliyeti hedefliyoruz.</p>
+    </div>
+    <div class="services-list">
+      <div class="services-categories">
+
+        <!-- PRODÜKSİYON -->
+        <div class="svc-col">
+          <div class="svc-col-header">
+            <span class="svc-col-num">A</span>
+            <span class="svc-col-title" data-i18n="svc_col_a">Prodüksiyon</span>
+          </div>
+          <div class="service-row fu clickable" onclick="openSvcByKey('sinema')"><span class="sr-num">01</span><span class="sr-name" data-i18n="svc_sinema_name">Sinema</span><span class="sr-desc" data-i18n="svc_sinema_short">Büyük perdede yankı uyandıran prodüksiyonlar</span></div>
+          <div class="service-row fu clickable" onclick="openSvcByKey('belgesel')"><span class="sr-num">02</span><span class="sr-name" data-i18n="svc_belgesel_name">Belgesel</span><span class="sr-desc" data-i18n="svc_belgesel_short">Unutulan hikayeleri belleğe kazımak</span></div>
+          <div class="service-row fu clickable" onclick="openSvcByKey('tanitim')"><span class="sr-num">03</span><span class="sr-name" data-i18n="svc_tanitim_name">Tanıtım — Reklam</span><span class="sr-desc" data-i18n="svc_tanitim_short">Markanızı öne çıkaran kurumsal filmler</span></div>
+          <div class="service-row fu clickable" onclick="openSvcByKey('animasyon')"><span class="sr-num">04</span><span class="sr-name" data-i18n="svc_animasyon_name">Animasyon</span><span class="sr-desc" data-i18n="svc_animasyon_short">2D / 3D animasyon ve motion graphic</span></div>
+          <div class="service-row fu clickable" onclick="openSvcByKey('hava')"><span class="sr-num">05</span><span class="sr-name" data-i18n="svc_hava_name">Hava Çekimleri</span><span class="sr-desc" data-i18n="svc_hava_short">4K drone ve FPV hava görüntüleri</span></div>
+        </div>
+
+        <!-- Dikey ayraç -->
+        <div class="svc-divider"></div>
+
+        <!-- TEKNOLOJİ -->
+        <div class="svc-col">
+          <div class="svc-col-header">
+            <span class="svc-col-num">B</span>
+            <span class="svc-col-title" data-i18n="svc_col_b">Teknoloji</span>
+          </div>
+          <div class="service-row fu clickable" onclick="openSvcByKey('muze')"><span class="sr-num">01</span><span class="sr-name" data-i18n="svc_muze_name">Müze</span><span class="sr-desc" data-i18n="svc_muze_short">İnteraktif müze deneyim tasarımı</span></div>
+          <div class="service-row fu clickable" onclick="openSvcByKey('hologram')"><span class="sr-num">02</span><span class="sr-name" data-i18n="svc_hologram_name">Hologram</span><span class="sr-desc" data-i18n="svc_hologram_short">Gerçeği ve hayali buluşturan 3D hologram</span></div>
+          <div class="service-row fu clickable" onclick="openSvcByKey('mapping')"><span class="sr-num">03</span><span class="sr-name" data-i18n="svc_mapping_name">Mapping</span><span class="sr-desc" data-i18n="svc_mapping_short">Yüzeyleri tuval yapan projeksiyon sanatı</span></div>
+          <div class="service-row fu clickable" onclick="openSvcByKey('arvr')"><span class="sr-num">04</span><span class="sr-name" data-i18n="svc_arvr_name">AR — VR</span><span class="sr-desc" data-i18n="svc_arvr_short">Artırılmış ve sanal gerçeklik uygulamaları</span></div>
+          <div class="service-row fu clickable" onclick="openSvcByKey('ai')"><span class="sr-num">05</span><span class="sr-name" data-i18n="svc_ai_name">Yazılım AI Sistemleri</span><span class="sr-desc" data-i18n="svc_ai_short">Yapay zeka destekli yazılım çözümleri</span></div>
+          <div class="service-row fu clickable" onclick="openSvcByKey('holo_cihaz')"><span class="sr-num">06</span><span class="sr-name" data-i18n="svc_holo_cihaz_name">Hologram Cihazları</span><span class="sr-desc" data-i18n="svc_holo_cihaz_short">Fan tipi ve projeksiyon hologram sistemleri</span></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEKNOLOJİ / AI YAZILIM -->
+<section id="teknoloji-ai">
+  <div class="hw-wrap">
+    <div class="hw-header fu">
+      <div class="sec-label" data-i18n="hw_label">Teknoloji</div>
+      <h2 class="hw-title" data-i18n="hw_title">Teknoloji/AI Yazılım</h2>
+    </div>
+    <div class="hw-tabs-bar">
+      <div class="hw-tabs-inner">
+        <button class="hw-tab active" onclick="switchHw(this,'cihaz')" data-i18n="hw_tab">Hologram Cihazları</button>
+      </div>
+    </div>
+    <div class="hw-panel active" id="hw-cihaz">
+      <div class="holo-devices">
+        <div class="holo-dev-card fu">
+          <div class="holo-dev-visual" style="--hw-color:rgba(0,229,255,.22)">
+            <div class="hw3d-scene">
+              <div class="hw3d-obj hw3d-fan">
+                <div class="fan-ring"></div>
+                <div class="fan-blade"></div><div class="fan-blade"></div><div class="fan-blade"></div><div class="fan-blade"></div><div class="fan-blade"></div>
+                <div class="fan-hub"></div>
+              </div>
+            </div>
+          </div>
+          <div class="holo-dev-body">
+            <div class="holo-dev-name" data-i18n="hd1_name">Fan Hologram Cihazı</div>
+            <p class="holo-dev-desc" data-i18n="hd1_desc">LED fan teknolojisi ile havada yüzen 3 boyutlu görüntüler oluşturan dönen ekran sistemi. Ticari alanlar ve etkinlikler için idealdir.</p>
+            <span class="holo-dev-badge" data-i18n="hd1_badge">42 cm — 100 cm</span>
+          </div>
+        </div>
+        <div class="holo-dev-card fu">
+          <div class="holo-dev-visual" style="--hw-color:rgba(180,0,255,.22)">
+            <div class="hw3d-scene">
+              <div class="hw3d-obj">
+                <div class="hw3d-pyramid">
+                  <div class="face face-f"></div>
+                  <div class="beam"></div>
+                  <div class="glow-base"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="holo-dev-body">
+            <div class="holo-dev-name" data-i18n="hd2_name">Piramit Hologram</div>
+            <p class="holo-dev-desc" data-i18n="hd2_desc">Piramit prizma sistemiyle 360° görüntü yansıtan gösteri cihazı. Ürün lansmanları ve müze uygulamaları için mükemmel.</p>
+            <span class="holo-dev-badge" data-i18n="hd2_badge">Masaüstü &amp; Büyük Boy</span>
+          </div>
+        </div>
+        <div class="holo-dev-card fu">
+          <div class="holo-dev-visual" style="--hw-color:rgba(0,150,255,.22)">
+            <div class="hw3d-scene">
+              <div class="hw3d-obj">
+                <div class="hw3d-screen">
+                  <div class="screen-body">
+                    <div class="screen-grid"></div>
+                    <div class="scan-line"></div>
+                  </div>
+                  <div class="screen-stand"></div>
+                  <div class="screen-base"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="holo-dev-body">
+            <div class="holo-dev-name" data-i18n="hd3_name">Holografik Ekran</div>
+            <p class="holo-dev-desc" data-i18n="hd3_desc">Özel film kaplı cam veya folyo üzerine projeksiyon ile gerçekleştirilen şeffaf holografik görüntüleme sistemi.</p>
+            <span class="holo-dev-badge" data-i18n="hd3_badge">Özel Boyut</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NELER YAPTIK -->
+<section id="neler-yaptik">
+  <div class="ref-wrap">
+    <div class="ref-header fu">
+      <div class="sec-label" data-i18n="ref_label">Başarılarımız</div>
+      <h2 class="ref-title" data-i18n="ref_title">Neler Yaptık</h2>
+    </div>
+    <div class="ref-tabs-bar">
+      <button class="ref-tab active" onclick="switchRef(this,'tv')" data-i18n="ref_tab1">TV Programları</button>
+      <button class="ref-tab" onclick="switchRef(this,'bel')" data-i18n="ref_tab2">Belgesel</button>
+      <button class="ref-tab" onclick="switchRef(this,'rek')" data-i18n="ref_tab3">Tanıtım &amp; Reklam</button>
+      <button class="ref-tab" onclick="switchRef(this,'ani')" data-i18n="ref_tab4">Animasyon</button>
+    </div>
+    <div class="ref-panel active" id="rp-tv">
+      <div class="ref-item"><span class="ref-dot"></span><span class="ref-name">TRT</span></div>
+      <div class="ref-item"><span class="ref-dot"></span><span class="ref-name">Türkiye'nin Ekranı</span></div>
+      <div class="ref-item"><span class="ref-dot"></span><span class="ref-name">Almanya'dan Çıktım Yola</span></div>
+      <div class="ref-item"><span class="ref-dot"></span><span class="ref-name">Can Dostlarım</span></div>
+    </div>
+    <div class="ref-panel" id="rp-bel">
+      <div class="ref-item"><span class="ref-dot"></span><span class="ref-name">Orman Bakanlığı</span></div>
+      <div class="ref-item"><span class="ref-dot"></span><span class="ref-name">Sarıkamış 100. Yılında — Ecdada Yürüyüş</span></div>
+      <div class="ref-item"><span class="ref-dot"></span><span class="ref-name">Eskişehir Türk Dünyası Vakfı</span></div>
+      <div class="ref-item"><span class="ref-dot"></span><span class="ref-name">Özbekistan</span></div>
+      <div class="ref-item"><span class="ref-dot"></span><span class="ref-name">Kosova</span></div>
+      <div class="ref-item"><span class="ref-dot"></span><span class="ref-name">Bosna Hersek</span></div>
+      <div class="ref-item"><span class="ref-dot"></span><span class="ref-name">Kırım</span></div>
+      <div class="ref-item"><span class="ref-dot"></span><span class="ref-name">Azerbaycan</span></div>
+      <div class="ref-item"><span class="ref-dot"></span><span class="ref-name">KKTC</span></div>
+      <div class="ref-item"><span class="ref-dot"></span><span class="ref-name">Makedonya</span></div>
+      <div class="ref-item"><span class="ref-dot"></span><span class="ref-name">Safranbolu Kaymakamlığı</span></div>
+      <div class="ref-item"><span class="ref-dot"></span><span class="ref-name">Beypazarı Belediyesi</span></div>
+      <div class="ref-item"><span class="ref-dot"></span><span class="ref-name">15 Temmuz Hesabı Sorulur</span></div>
+    </div>
+    <div class="ref-panel" id="rp-rek">
+      <div class="ref-item"><span class="ref-dot"></span><span class="ref-name">Ankara Büyükşehir Belediyesi</span></div>
+      <div class="ref-item"><span class="ref-dot"></span><span class="ref-name">Erzurum Büyükşehir Belediyesi</span></div>
+      <div class="ref-item"><span class="ref-dot"></span><span class="ref-name">Tuzla Belediyesi</span></div>
+      <div class="ref-item"><span class="ref-dot"></span><span class="ref-name">Goxu</span></div>
+      <div class="ref-item"><span class="ref-dot"></span><span class="ref-name">SGK Danışmanlık</span></div>
+      <div class="ref-item"><span class="ref-dot"></span><span class="ref-name">Çağım Lojistik</span></div>
+    </div>
+    <div class="ref-panel" id="rp-ani">
+      <div class="ref-item"><span class="ref-dot"></span><span class="ref-name">Sağlık Bakanlığı Kamu Spotu</span></div>
+      <div class="ref-item"><span class="ref-dot"></span><span class="ref-name">Nutrigen</span></div>
+      <div class="ref-item"><span class="ref-dot"></span><span class="ref-name">Adminium</span></div>
+      <div class="ref-item"><span class="ref-dot"></span><span class="ref-name">Süleymaniye Vakfı</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- İLETİŞİM -->
+<section id="iletisim">
+  <div class="contact-wrap">
+    <div class="contact-left">
+      <h2 class="contact-title fu" data-i18n="contact_title">İletişim</h2>
+      <div class="contact-map">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12041.522!2d29.0233!3d40.9900!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14cab7a0f8a9e6e9%3A0x4c76cf3d2a2a2a2a!2sKad%C4%B1k%C3%B6y%2C%20%C4%B0stanbul!5e0!3m2!1str!2str!4v1699000000000" allowfullscreen="" loading="lazy"></iframe>
+      </div>
+      <div class="contact-info">
+        <div class="ci-row"><span class="ci-ico">📍</span><span class="ci-txt">Kadıköy / İstanbul</span></div>
+        <div class="ci-row"><span class="ci-ico">📱</span><span class="ci-txt"><a href="tel:+905332170323">0 533 217 03 23</a></span></div>
+        <div class="ci-row"><span class="ci-ico">📧</span><span class="ci-txt"><a href="mailto:ahmetoney@20dokuz.com">ahmetoney@20dokuz.com</a></span></div>
+      </div>
+    </div>
+    <div class="contact-right">
+      <h3 class="contact-form-title" data-i18n="contact_form_title">Bize Ulaşın</h3>
+      <form onsubmit="return false;">
+        <div class="fg"><input type="text" data-i18n-ph="ph_name" placeholder="Adınız Soyadınız"/></div>
+        <div class="fg"><input type="email" data-i18n-ph="ph_email" placeholder="E-posta Adresiniz"/></div>
+        <div class="fg"><input type="text" data-i18n-ph="ph_subject" placeholder="Konu"/></div>
+        <div class="fg"><textarea data-i18n-ph="ph_msg" placeholder="Mesajınız..."></textarea></div>
+        <button class="btn-send" type="submit" data-i18n="btn_send">Gönder</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="ft-brand">
+        <img src="images/logo-new.png" alt="20Dokuz" style="height:56px;width:auto;display:block;margin-bottom:16px;"/>
+        <p data-i18n="ft_desc">2011'den bu yana sinema kalitesinde prodüksiyon, hologram teknolojisi ve yaratıcı içerik üretimi.</p>
+        <div class="ft-brand-slogan" data-i18n="ft_slogan">" Her Şey Zamanında Olur "</div>
+        <div class="socials">
+          <a href="#" class="soc-btn" aria-label="Instagram">📷</a>
+          <a href="#" class="soc-btn" aria-label="YouTube">▶</a>
+          <a href="#" class="soc-btn" aria-label="LinkedIn">in</a>
+        </div>
+      </div>
+      <div class="ft-col">
+        <h5 data-i18n="ft_col1">Hizmetler</h5>
+        <ul>
+          <li><a href="#prodüksiyon" data-i18n="ft_link_sinema">Sinema</a></li>
+          <li><a href="#prodüksiyon" data-i18n="ft_link_tv">TV Programı</a></li>
+          <li><a href="#prodüksiyon" data-i18n="ft_link_bel">Belgesel</a></li>
+          <li><a href="#prodüksiyon" data-i18n="ft_link_holo">Hologram</a></li>
+          <li><a href="#prodüksiyon" data-i18n="ft_link_drone">Drone</a></li>
+        </ul>
+      </div>
+      <div class="ft-col">
+        <h5 data-i18n="ft_col2">Kurumsal</h5>
+        <ul>
+          <li><a href="#hakkimizda" data-i18n="nav_about">Hakkımızda</a></li>
+          <li><a href="#neler-yaptik" data-i18n="nav_ref">Referanslar</a></li>
+          <li><a href="#teknoloji-ai" data-i18n="hw_label">Teknoloji</a></li>
+          <li><a href="#iletisim" data-i18n="nav_contact">İletişim</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p data-i18n="ft_copyright">© 2024 20DOKUZ Prodüksiyon. Tüm hakları saklıdır.</p>
+      <span>20DOKUZ · Kadıköy</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── Lazy Video Observer ──
+(function(){
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const v = e.target;
+        if (v.dataset.src) {
+          v.querySelector('source').src = v.dataset.src;
+          v.load();
+          v.dataset.src = '';
+        }
+        obs.unobserve(v);
+      }
+    });
+  }, { rootMargin: '200px' });
+  document.querySelectorAll('video[data-src]').forEach(v => obs.observe(v));
+})();
+
+// ── Cursor ──
+const dot = document.getElementById('cur-dot');
+const ring = document.getElementById('cur-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; dot.style.left = mx+'px'; dot.style.top = my+'px'; });
+(function animRing(){
+  rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+  ring.style.left = rx+'px'; ring.style.top = ry+'px';
+  requestAnimationFrame(animRing);
+})();
+
+// ── Navbar scroll ──
+window.addEventListener('scroll', () => {
+  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 40);
+});
+
+// ── Hamburger ──
+function closeMob() {
+  document.getElementById('mob-menu').classList.remove('open');
+  document.getElementById('ham').classList.remove('open');
+}
+document.getElementById('ham').addEventListener('click', function() {
+  this.classList.toggle('open');
+  document.getElementById('mob-menu').classList.toggle('open');
+});
+
+// ── Modal ──
+function openReel() { document.getElementById('reel-modal').classList.add('open'); }
+function closeReel() { document.getElementById('reel-modal').classList.remove('open'); }
+document.getElementById('reel-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeReel();
+});
+
+// ── Reel slider ──
+let reelIdx = 0;
+function reelGoTo(i) {
+  const slides = document.querySelectorAll('.reel-slide');
+  const dots = document.querySelectorAll('.reel-dot');
+  slides.forEach(s => s.classList.remove('active'));
+  dots.forEach(d => d.classList.remove('active'));
+  reelIdx = (i + slides.length) % slides.length;
+  slides[reelIdx].classList.add('active');
+  if (dots[reelIdx]) dots[reelIdx].classList.add('active');
+}
+function reelSlide(d) { reelGoTo(reelIdx + d); }
+
+// ── Ref tabs ──
+function switchRef(btn, id) {
+  document.querySelectorAll('.ref-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.ref-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('rp-' + id).classList.add('active');
+}
+
+// ── HW tabs ──
+function switchHw(btn, id) {
+  document.querySelectorAll('.hw-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.hw-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('hw-' + id).classList.add('active');
+}
+
+// ── GSAP Animations ──
+if (typeof gsap !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Hero text
+  gsap.from('.hero-line-inner', {
+    y: '110%', duration: 1.2, stagger: 0.15, ease: 'power4.out', delay: 0.3
+  });
+  gsap.to('.hero-label', { opacity: 1, duration: 1, delay: 0.8 });
+  gsap.from('.hero-bottom', { opacity: 0, y: 30, duration: 1, delay: 1.2 });
+
+  // Fade up elements
+  gsap.utils.toArray('.fu').forEach(el => {
+    gsap.to(el, {
+      opacity: 1, y: 0, duration: 0.9, ease: 'power3.out',
+      scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' }
+    });
+  });
+
+  // Counter animation
+  document.querySelectorAll('.stat-num[data-target]').forEach(el => {
+    const target = +el.dataset.target;
+    ScrollTrigger.create({
+      trigger: el,
+      start: 'top 85%',
+      onEnter: () => {
+        gsap.to({ val: 0 }, {
+          val: target, duration: 1.8, ease: 'power2.out',
+          onUpdate: function() { el.textContent = Math.round(this.targets()[0].val) + '+'; }
+        });
+      }
+    });
+  });
+} else {
+  // Fallback without GSAP
+  document.querySelectorAll('.fu').forEach(el => {
+    el.style.opacity = '1'; el.style.transform = 'none';
+  });
+  document.querySelectorAll('.stat-num[data-target]').forEach(el => {
+    el.textContent = el.dataset.target + '+';
+  });
+}
+
+// ── Hizmet Modal ──
+function openSvc(cat, title, src, type, desc) {
+  const media = document.getElementById('svc-modal-media');
+  media.innerHTML = type === 'video'
+    ? `<video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;"><source src="${src}" type="video/mp4"></video>`
+    : `<img src="${src}" style="width:100%;height:100%;object-fit:cover;display:block;"/>`;
+  document.getElementById('svc-modal-tag').textContent = cat;
+  document.getElementById('svc-modal-title').textContent = title;
+  document.getElementById('svc-modal-desc').textContent = desc;
+  document.getElementById('svc-modal').classList.add('open');
+}
+function closeSvcModal() {
+  document.getElementById('svc-modal').classList.remove('open');
+  document.getElementById('svc-modal-media').innerHTML = '';
+}
+document.getElementById('svc-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeSvcModal();
+});
+
+// ── Video Lightbox ──
+function openVidLb(src, title) {
+  const lb = document.getElementById('vid-lightbox');
+  const player = document.getElementById('vid-lb-player');
+  document.getElementById('vid-lb-src').src = src;
+  document.getElementById('vid-lb-title').textContent = title;
+  player.load();
+  player.play();
+  lb.classList.add('open');
+}
+function closeVidLb() {
+  const lb = document.getElementById('vid-lightbox');
+  const player = document.getElementById('vid-lb-player');
+  player.pause();
+  player.currentTime = 0;
+  lb.classList.remove('open');
+}
+document.getElementById('vid-lightbox').addEventListener('click', function(e) {
+  if (e.target === this) closeVidLb();
+});
+
+// ── Keyboard close ──
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeReel(); closeMob(); closeVidLb(); closeSvcModal(); } });
+
+// ══════════════════════════════════════════════════════
+// I18N — Dil Sistemi
+// ══════════════════════════════════════════════════════
+const TRANSLATIONS = {
+  tr: {
+    nav_home:'Ana Sayfa', nav_about:'Hakkımızda', nav_prod:'Prodüksiyon',
+    nav_ref:'Referanslar', nav_tech:'Teknoloji/AI Yazılım', nav_contact:'İletişim',
+    hero_slogan:'" Her Şey\nZamanında Olur "',
+    hero_btn1:'Keşfet', hero_btn2:'▶  Demo Reel',
+    sr_eyebrow:'Showreel · 2024',
+    sr_headline:'Görüntüler', sr_headline_em:'Konuşur',
+    sr_sub:'Sinema kalitesinde prodüksiyondan hologram teknolojisine — her kare bir hikâye anlatır.',
+    sr_play:"Reel'i İzle",
+    sr_lbl_res:'Çözünürlük', sr_lbl_qual:'Kalite', sr_lbl_proj:'Proje',
+    sr_live:'CANLI',
+    sr_stat1:'15+ Hizmet', sr_stat2:'50+ Proje', sr_stat3:'HD / 4K',
+    about_label:'Biz Kimiz',
+    about_title:'Hikâyeleri', about_title_em:'Görüntüye', about_title2:'Dökme Sanatı',
+    about_sub:'Yıllık Deneyim ile Sektörde',
+    about_p1:'2011\'den bu yana yayın dünyasında kesintisiz üretim yapan 20DOKUZ Prodüksiyon, değişen teknolojiyi sahne arkasının her köşesine taşıyan, genç ve yaratıcı bir ekiple hikâye anlatıcılığını yeniden tanımlıyor.',
+    about_p2:'Kurumsal müşteriler ve yayıncılar için Televizyon Reklamları, Belgeseller, Tanıtım Filmleri, Animasyonlar ve en ileri teknoloji olan Hologram & Video Mapping projelerini hayata geçiriyoruz.',
+    about_p3:'Unutulmuşları gün yüzüne çıkarmak, farklılıkları görünür kılmak ve insanların paylaşmaktan zevk aldığı güçlü hikâyeler yaratmak — bu felsefe bizi var eden motor güçtür.',
+    about_tag1:'Vizyon', about_tag2:'Yaratıcılık', about_tag3:'Teknoloji',
+    about_tag4:'Müşteri Odaklı', about_tag5:'Ekip Ruhu',
+    stat_lbl1:'Yıl Deneyim', stat_lbl2:'Tamamlanan Proje', stat_lbl3:'Kurumsal Müşteri',
+    svc_title:'Neler', svc_title_em:'Yaparız',
+    svc_sub:'Sinematik üretimden hologram teknolojisine, her projede mükemmeliyeti hedefliyoruz.',
+    svc_col_a:'Prodüksiyon', svc_col_b:'Teknoloji',
+    svc_sinema_name:'Sinema', svc_sinema_short:'Büyük perdede yankı uyandıran prodüksiyonlar',
+    svc_sinema_desc:'Sinema perdelerinde yankı uyandıran, duyguları derinlemesine işleyen uzun metraj ve kısa film prodüksiyonları gerçekleştiriyoruz. Senaryo geliştirmeden post prodüksiyona kadar tüm süreçleri profesyonel ekibimizle yönetiyoruz.',
+    svc_belgesel_name:'Belgesel', svc_belgesel_short:'Unutulan hikayeleri belleğe kazımak',
+    svc_belgesel_desc:'Unutulmaya yüz tutmuş hikayeleri, insanları ve olayları kalıcı bir belgeye dönüştürüyoruz. Tarihsel, kültürel ve kurumsal belgeseller için araştırma, çekim ve kurgu aşamalarında tam destek sunuyoruz.',
+    svc_tanitim_name:'Tanıtım — Reklam', svc_tanitim_short:'Markanızı öne çıkaran kurumsal filmler',
+    svc_tanitim_desc:'Markanızı hedef kitlenize en güçlü biçimde sunan reklam filmleri ve kurumsal tanıtım videoları üretiyoruz. Marka kimliğinizi pekiştiren, akılda kalan yaratıcı içerikler oluşturuyoruz.',
+    svc_animasyon_name:'Animasyon', svc_animasyon_short:'2D / 3D animasyon ve motion graphic',
+    svc_animasyon_desc:'2D ve 3D animasyon, motion graphic ve karakter animasyonu alanlarında özgün içerikler üretiyoruz. Karmaşık fikirleri ve mesajları görsel hikâyelerle hayata geçiriyoruz.',
+    svc_hava_name:'Hava Çekimleri', svc_hava_short:'4K drone ve FPV hava görüntüleri',
+    svc_hava_desc:'4K çözünürlüklü drone ve FPV kameralarla eşsiz hava görüntüleri elde ediyoruz. Geniş açılı panoramik çekimlerden hızlı FPV geçişlere kadar her türlü hava prodüksiyonunu gerçekleştiriyoruz.',
+    svc_muze_name:'Müze', svc_muze_short:'İnteraktif müze deneyim tasarımı',
+    svc_muze_desc:'Müze ve sergi alanlarında ziyaretçilere unutulmaz deneyimler yaşatan interaktif dijital sistemler tasarlıyoruz. Dokunmatik ekranlar, projeksiyon sistemleri ve hologram teknolojisiyle müzecilik anlayışını dönüştürüyoruz.',
+    svc_hologram_name:'Hologram', svc_hologram_short:'Gerçeği ve hayali buluşturan 3D hologram',
+    svc_hologram_desc:'LED fan ve piramit prizma teknolojileriyle havada yüzen, etkileyici 3D hologram görüntüler oluşturuyoruz. Ürün lansmanları, etkinlikler ve kalıcı sergi alanları için özel hologram çözümleri sunuyoruz.',
+    svc_mapping_name:'Mapping', svc_mapping_short:'Yüzeyleri tuval yapan projeksiyon sanatı',
+    svc_mapping_desc:'Bina cepheleri, sahneler ve özel yüzeyler üzerine uygulanan projeksiyon mapping ile sıradan mekânları büyüleyici görsel deneyimlere dönüştürüyoruz. Her yüzey bir tuval, her proje bir şölen.',
+    svc_arvr_name:'AR — VR', svc_arvr_short:'Artırılmış ve sanal gerçeklik uygulamaları',
+    svc_arvr_desc:'Artırılmış gerçeklik ve sanal gerçeklik teknolojileriyle kullanıcıları dijital dünyaya taşıyan sürükleyici deneyimler geliştiriyoruz. Eğitim, pazarlama ve eğlence sektörlerine özel AR/VR çözümleri üretiyoruz.',
+    svc_ai_name:'Yazılım AI Sistemleri', svc_ai_short:'Yapay zeka destekli yazılım çözümleri',
+    svc_ai_desc:'Yapay zeka destekli yazılım sistemleri ve özel algoritmalar geliştirerek iş süreçlerini akıllı hale getiriyoruz. Görüntü işleme, veri analizi ve otomasyon alanlarında yenilikçi AI çözümleri sunuyoruz.',
+    svc_holo_cihaz_name:'Hologram Cihazları', svc_holo_cihaz_short:'Fan tipi ve projeksiyon hologram sistemleri',
+    svc_holo_cihaz_desc:'42 cm\'den büyük boy sistemlere kadar geniş yelpazeyle fan hologram cihazları, piramit hologramlar ve şeffaf holografik ekranlar temin edip kurulumunu gerçekleştiriyoruz. Satış, kiralama ve teknik destek hizmetleri sunuyoruz.',
+    hw_label:'Teknoloji', hw_title:'Teknoloji/AI Yazılım', hw_tab:'Hologram Cihazları',
+    hd1_name:'Fan Hologram Cihazı', hd1_badge:'42 cm — 100 cm',
+    hd1_desc:'LED fan teknolojisi ile havada yüzen 3 boyutlu görüntüler oluşturan dönen ekran sistemi. Ticari alanlar ve etkinlikler için idealdir.',
+    hd2_name:'Piramit Hologram', hd2_badge:'Masaüstü & Büyük Boy',
+    hd2_desc:'Piramit prizma sistemiyle 360° görüntü yansıtan gösteri cihazı. Ürün lansmanları ve müze uygulamaları için mükemmel.',
+    hd3_name:'Holografik Ekran', hd3_badge:'Özel Boyut',
+    hd3_desc:'Özel film kaplı cam veya folyo üzerine projeksiyon ile gerçekleştirilen şeffaf holografik görüntüleme sistemi.',
+    ref_label:'Başarılarımız', ref_title:'Neler Yaptık',
+    ref_tab1:'TV Programları', ref_tab2:'Belgesel', ref_tab3:'Tanıtım & Reklam', ref_tab4:'Animasyon',
+    contact_title:'İletişim', contact_form_title:'Bize Ulaşın',
+    ph_name:'Adınız Soyadınız', ph_email:'E-posta Adresiniz', ph_subject:'Konu', ph_msg:'Mesajınız...',
+    btn_send:'Gönder',
+    ft_desc:'2011\'den bu yana sinema kalitesinde prodüksiyon, hologram teknolojisi ve yaratıcı içerik üretimi.',
+    ft_slogan:'" Her Şey Zamanında Olur "',
+    ft_col1:'Hizmetler', ft_col2:'Kurumsal',
+    ft_link_sinema:'Sinema', ft_link_tv:'TV Programı', ft_link_bel:'Belgesel',
+    ft_link_holo:'Hologram', ft_link_drone:'Drone',
+    ft_copyright:'© 2024 20DOKUZ Prodüksiyon. Tüm hakları saklıdır.',
+  },
+  en: {
+    nav_home:'Home', nav_about:'About', nav_prod:'Production',
+    nav_ref:'References', nav_tech:'Technology / AI', nav_contact:'Contact',
+    hero_slogan:'" Everything Happens\nOn Time "',
+    hero_btn1:'Discover', hero_btn2:'▶  Demo Reel',
+    sr_eyebrow:'Showreel · 2024',
+    sr_headline:'Images', sr_headline_em:'Speak',
+    sr_sub:'From cinema-quality production to hologram technology — every frame tells a story.',
+    sr_play:'Watch Reel',
+    sr_lbl_res:'Resolution', sr_lbl_qual:'Quality', sr_lbl_proj:'Projects',
+    sr_live:'LIVE',
+    sr_stat1:'15+ Services', sr_stat2:'50+ Projects', sr_stat3:'HD / 4K',
+    about_label:'Who We Are',
+    about_title:'The Art of', about_title_em:'Turning', about_title2:'Stories into Images',
+    about_sub:'Years of Experience in the Industry',
+    about_p1:'Since 2011, 20DOKUZ Production has been continuously producing in the broadcast world, redefining storytelling with a young and creative team that brings evolving technology to every corner of behind-the-scenes work.',
+    about_p2:'For corporate clients and broadcasters, we produce Television Commercials, Documentaries, Promotional Films, Animations, and cutting-edge Hologram & Video Mapping projects.',
+    about_p3:'Bringing forgotten stories to light, making differences visible, and creating powerful stories that people love to share — this philosophy is the driving force behind our existence.',
+    about_tag1:'Vision', about_tag2:'Creativity', about_tag3:'Technology',
+    about_tag4:'Client-Focused', about_tag5:'Team Spirit',
+    stat_lbl1:'Years of Experience', stat_lbl2:'Completed Projects', stat_lbl3:'Corporate Clients',
+    svc_title:'What We', svc_title_em:'Do',
+    svc_sub:'From cinematic production to hologram technology, we aim for excellence in every project.',
+    svc_col_a:'Production', svc_col_b:'Technology',
+    svc_sinema_name:'Cinema', svc_sinema_short:'Productions that resonate on the big screen',
+    svc_sinema_desc:'We produce feature-length and short film productions that resonate on cinema screens and touch emotions deeply. We manage all processes from script development to post-production with our professional team.',
+    svc_belgesel_name:'Documentary', svc_belgesel_short:'Engraving forgotten stories into memory',
+    svc_belgesel_desc:'We transform stories, people, and events that are at risk of being forgotten into permanent documents. We provide full support in research, filming, and editing phases for historical, cultural, and corporate documentaries.',
+    svc_tanitim_name:'Promotion — Advertising', svc_tanitim_short:'Corporate films that highlight your brand',
+    svc_tanitim_desc:'We produce advertising films and corporate promotional videos that present your brand most powerfully to your target audience. We create creative content that reinforces your brand identity and leaves a lasting impression.',
+    svc_animasyon_name:'Animation', svc_animasyon_short:'2D / 3D animation and motion graphics',
+    svc_animasyon_desc:'We produce original content in 2D and 3D animation, motion graphics, and character animation. We bring complex ideas and messages to life with visual stories.',
+    svc_hava_name:'Aerial Shots', svc_hava_short:'4K drone and FPV aerial footage',
+    svc_hava_desc:'We capture unique aerial footage with 4K resolution drone and FPV cameras. We carry out all types of aerial production from wide-angle panoramic shots to fast FPV transitions.',
+    svc_muze_name:'Museum', svc_muze_short:'Interactive museum experience design',
+    svc_muze_desc:'We design interactive digital systems that create unforgettable experiences for visitors in museum and exhibition spaces. We transform the concept of museology with touchscreens, projection systems, and hologram technology.',
+    svc_hologram_name:'Hologram', svc_hologram_short:'3D hologram bridging reality and imagination',
+    svc_hologram_desc:'We create impressive 3D hologram images floating in the air using LED fan and pyramid prism technologies. We offer custom hologram solutions for product launches, events, and permanent exhibition spaces.',
+    svc_mapping_name:'Mapping', svc_mapping_short:'Projection art that turns surfaces into canvases',
+    svc_mapping_desc:'We transform ordinary spaces into captivating visual experiences through projection mapping applied to building facades, stages, and special surfaces. Every surface is a canvas, every project a spectacle.',
+    svc_arvr_name:'AR — VR', svc_arvr_short:'Augmented and virtual reality applications',
+    svc_arvr_desc:'We develop immersive experiences that transport users to the digital world using augmented reality and virtual reality technologies. We produce custom AR/VR solutions for education, marketing, and entertainment sectors.',
+    svc_ai_name:'Software AI Systems', svc_ai_short:'AI-powered software solutions',
+    svc_ai_desc:'We develop AI-powered software systems and custom algorithms to make business processes smarter. We offer innovative AI solutions in image processing, data analysis, and automation.',
+    svc_holo_cihaz_name:'Hologram Devices', svc_holo_cihaz_short:'Fan-type and projection hologram systems',
+    svc_holo_cihaz_desc:'We supply and install fan hologram devices, pyramid holograms, and transparent holographic screens across a wide range from 42 cm to large-format systems. We offer sales, rental, and technical support services.',
+    hw_label:'Technology', hw_title:'Technology / AI Software', hw_tab:'Hologram Devices',
+    hd1_name:'Fan Hologram Device', hd1_badge:'42 cm — 100 cm',
+    hd1_desc:'A rotating display system that creates 3D images floating in the air using LED fan technology. Ideal for commercial spaces and events.',
+    hd2_name:'Pyramid Hologram', hd2_badge:'Desktop & Large Format',
+    hd2_desc:'A display device that projects 360° images using a pyramid prism system. Perfect for product launches and museum applications.',
+    hd3_name:'Holographic Screen', hd3_badge:'Custom Size',
+    hd3_desc:'A transparent holographic display system realized through projection onto specially coated glass or foil.',
+    ref_label:'Our Achievements', ref_title:'What We Did',
+    ref_tab1:'TV Programs', ref_tab2:'Documentary', ref_tab3:'Promotion & Advertising', ref_tab4:'Animation',
+    contact_title:'Contact', contact_form_title:'Get in Touch',
+    ph_name:'Full Name', ph_email:'Email Address', ph_subject:'Subject', ph_msg:'Your Message...',
+    btn_send:'Send',
+    ft_desc:'Since 2011, cinema-quality production, hologram technology, and creative content production.',
+    ft_slogan:'" Everything Happens On Time "',
+    ft_col1:'Services', ft_col2:'Corporate',
+    ft_link_sinema:'Cinema', ft_link_tv:'TV Program', ft_link_bel:'Documentary',
+    ft_link_holo:'Hologram', ft_link_drone:'Drone',
+    ft_copyright:'© 2024 20DOKUZ Production. All rights reserved.',
+  },
+  ar: {
+    nav_home:'الرئيسية', nav_about:'من نحن', nav_prod:'الإنتاج',
+    nav_ref:'المراجع', nav_tech:'التكنولوجيا / الذكاء الاصطناعي', nav_contact:'اتصل بنا',
+    hero_slogan:'" كل شيء\nيأتي في وقته "',
+    hero_btn1:'اكتشف', hero_btn2:'▶  عرض الأعمال',
+    sr_eyebrow:'عرض الأعمال · 2024',
+    sr_headline:'الصور', sr_headline_em:'تتكلم',
+    sr_sub:'من إنتاج بجودة السينما إلى تقنية الهولوغرام — كل إطار يحكي قصة.',
+    sr_play:'شاهد العرض',
+    sr_lbl_res:'الدقة', sr_lbl_qual:'الجودة', sr_lbl_proj:'مشروع',
+    sr_live:'مباشر',
+    sr_stat1:'+15 خدمة', sr_stat2:'+50 مشروع', sr_stat3:'HD / 4K',
+    about_label:'من نحن',
+    about_title:'فن تحويل', about_title_em:'القصص', about_title2:'إلى صور',
+    about_sub:'سنوات من الخبرة في الصناعة',
+    about_p1:'منذ عام 2011، تواصل شركة 20DOKUZ للإنتاج العمل بلا انقطاع في عالم البث، مع فريق شاب ومبدع يعيد تعريف فن رواية القصص بالتكنولوجيا المتطورة.',
+    about_p2:'ننفذ للعملاء والجهات البث: إعلانات تلفزيونية، وثائقيات، أفلام ترويجية، رسوم متحركة، ومشاريع الهولوغرام والمابينج.',
+    about_p3:'إبراز المنسي، وتوضيح المختلف، وصنع قصص قوية يحب الناس مشاركتها — هذه الفلسفة هي محركنا.',
+    about_tag1:'رؤية', about_tag2:'إبداع', about_tag3:'تكنولوجيا',
+    about_tag4:'التركيز على العميل', about_tag5:'روح الفريق',
+    stat_lbl1:'سنوات خبرة', stat_lbl2:'مشروع منجز', stat_lbl3:'عميل مؤسسي',
+    svc_title:'ماذا', svc_title_em:'نفعل',
+    svc_sub:'من الإنتاج السينمائي إلى تكنولوجيا الهولوغرام، نسعى للتميز في كل مشروع.',
+    svc_col_a:'الإنتاج', svc_col_b:'التكنولوجيا',
+    svc_sinema_name:'سينما', svc_sinema_short:'إنتاجات تتردد أصداؤها على الشاشة الكبيرة',
+    svc_sinema_desc:'ننتج أفلاماً طويلة وقصيرة تتردد على الشاشة الكبيرة وتلمس المشاعر بعمق. ندير جميع العمليات من تطوير السيناريو إلى ما بعد الإنتاج.',
+    svc_belgesel_name:'وثائقي', svc_belgesel_short:'نقش القصص المنسية في الذاكرة',
+    svc_belgesel_desc:'نحوّل القصص والأشخاص والأحداث المعرضة للنسيان إلى وثائق دائمة. ندعم كاملاً مراحل البحث والتصوير والمونتاج للوثائقيات التاريخية والثقافية والمؤسسية.',
+    svc_tanitim_name:'ترويج — إعلان', svc_tanitim_short:'أفلام مؤسسية تبرز علامتك التجارية',
+    svc_tanitim_desc:'ننتج أفلاماً إعلانية وفيديوهات ترويجية تقدم علامتك التجارية بأقوى صورة لجمهورك المستهدف.',
+    svc_animasyon_name:'رسوم متحركة', svc_animasyon_short:'رسوم ثنائية/ثلاثية الأبعاد وجرافيك',
+    svc_animasyon_desc:'ننتج محتوى أصيلاً في مجال الرسوم المتحركة ثنائية وثلاثية الأبعاد والجرافيك المتحرك وتحريك الشخصيات.',
+    svc_hava_name:'تصوير جوي', svc_hava_short:'مشاهد جوية بدرون 4K وFPV',
+    svc_hava_desc:'نحصل على لقطات جوية رائعة بكاميرات درون وFPV بدقة 4K. من اللقطات البانورامية إلى الانتقالات السريعة FPV.',
+    svc_muze_name:'متحف', svc_muze_short:'تصميم تجربة متحفية تفاعلية',
+    svc_muze_desc:'نصمم أنظمة رقمية تفاعلية تمنح الزوار تجارب لا تُنسى في المتاحف والمعارض.',
+    svc_hologram_name:'هولوغرام', svc_hologram_short:'هولوغرام ثلاثي الأبعاد يجمع الواقع والخيال',
+    svc_hologram_desc:'نبتكر صور هولوغرام ثلاثية الأبعاد معلقة في الهواء باستخدام تقنيات المروحة LED والهرم المنشوري.',
+    svc_mapping_name:'ماپينج', svc_mapping_short:'فن الإسقاط الذي يحوّل الأسطح إلى لوحات',
+    svc_mapping_desc:'نحوّل الأماكن العادية إلى تجارب بصرية رائعة من خلال ماپينج الإسقاط على واجهات المباني والمسارح.',
+    svc_arvr_name:'AR — VR', svc_arvr_short:'تطبيقات الواقع المعزز والافتراضي',
+    svc_arvr_desc:'نطور تجارب غامرة تنقل المستخدمين إلى العالم الرقمي باستخدام تقنيات الواقع المعزز والافتراضي.',
+    svc_ai_name:'أنظمة برمجيات الذكاء الاصطناعي', svc_ai_short:'حلول برمجية مدعومة بالذكاء الاصطناعي',
+    svc_ai_desc:'نطور أنظمة برمجية مدعومة بالذكاء الاصطناعي وخوارزميات مخصصة لجعل العمليات أكثر ذكاءً.',
+    svc_holo_cihaz_name:'أجهزة الهولوغرام', svc_holo_cihaz_short:'أنظمة هولوغرام بالمروحة والإسقاط',
+    svc_holo_cihaz_desc:'نوفر ونركّب أجهزة هولوغرام بالمروحة والهرم والشاشات الهولوغرافية الشفافة. نقدم خدمات البيع والإيجار والدعم الفني.',
+    hw_label:'التكنولوجيا', hw_title:'التكنولوجيا / برمجيات الذكاء الاصطناعي', hw_tab:'أجهزة الهولوغرام',
+    hd1_name:'جهاز الهولوغرام بالمروحة', hd1_badge:'42 سم — 100 سم',
+    hd1_desc:'نظام شاشة دوارة ينتج صوراً ثلاثية الأبعاد معلقة في الهواء باستخدام تقنية LED. مثالي للأماكن التجارية والفعاليات.',
+    hd2_name:'هولوغرام هرمي', hd2_badge:'سطح المكتب والحجم الكبير',
+    hd2_desc:'جهاز عرض يعكس صوراً بزاوية 360° باستخدام نظام الهرم المنشوري. مثالي لإطلاق المنتجات وتطبيقات المتاحف.',
+    hd3_name:'شاشة هولوغرافية', hd3_badge:'حجم مخصص',
+    hd3_desc:'نظام عرض هولوغرافي شفاف يتم عبر إسقاط على زجاج أو فوليو مطلي بشكل خاص.',
+    ref_label:'إنجازاتنا', ref_title:'ما أنجزناه',
+    ref_tab1:'برامج تلفزيونية', ref_tab2:'وثائقي', ref_tab3:'ترويج وإعلان', ref_tab4:'رسوم متحركة',
+    contact_title:'اتصل بنا', contact_form_title:'تواصل معنا',
+    ph_name:'الاسم الكامل', ph_email:'البريد الإلكتروني', ph_subject:'الموضوع', ph_msg:'رسالتك...',
+    btn_send:'إرسال',
+    ft_desc:'منذ 2011، إنتاج بجودة السينما، تقنية الهولوغرام، وإنتاج المحتوى الإبداعي.',
+    ft_slogan:'" كل شيء يأتي في وقته "',
+    ft_col1:'الخدمات', ft_col2:'مؤسسي',
+    ft_link_sinema:'سينما', ft_link_tv:'برنامج تلفزيوني', ft_link_bel:'وثائقي',
+    ft_link_holo:'هولوغرام', ft_link_drone:'درون',
+    ft_copyright:'© 2024 20DOKUZ للإنتاج. جميع الحقوق محفوظة.',
+  }
+};
+
+const SVC_DATA = {
+  sinema:     { src:'images/prod_sinema.mp4',    type:'video', cat:'svc_col_a' },
+  belgesel:   { src:'images/prod_belgesel.mp4',  type:'video', cat:'svc_col_a' },
+  tanitim:    { src:'images/prod_tanitim.mp4',   type:'video', cat:'svc_col_a' },
+  animasyon:  { src:'images/prod_animasyon.mp4', type:'video', cat:'svc_col_a' },
+  hava:       { src:'images/prod_hava.mp4',      type:'video', cat:'svc_col_a' },
+  muze:       { src:'images/tek_muze.mp4',       type:'video', cat:'svc_col_b' },
+  hologram:   { src:'images/tek_hologram.mp4',   type:'video', cat:'svc_col_b' },
+  mapping:    { src:'images/tek_mapping.mp4',    type:'video', cat:'svc_col_b' },
+  arvr:       { src:'images/tek_arvr.mp4',       type:'video', cat:'svc_col_b' },
+  ai:         { src:'images/tek_ai.mp4',         type:'video', cat:'svc_col_b' },
+  holo_cihaz: { src:'images/tek_holo_cihaz.mp4', type:'video', cat:'svc_col_b' },
+};
+
+let currentLang = 'tr';
+
+function switchLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('lang', lang);
+  const T = TRANSLATIONS[lang];
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const k = el.dataset.i18n;
+    if (T[k] !== undefined) el.textContent = T[k];
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    const k = el.dataset.i18nPh;
+    if (T[k] !== undefined) el.placeholder = T[k];
+  });
+  document.getElementById('lang-current').textContent = lang === 'ar' ? 'AR' : lang.toUpperCase();
+  ['tr','en','ar'].forEach(l => {
+    document.getElementById('lo-' + l).classList.toggle('active', l === lang);
+  });
+  document.getElementById('lang-dropdown').classList.remove('open');
+}
+
+function toggleLangMenu() {
+  document.getElementById('lang-dropdown').classList.toggle('open');
+}
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('#lang-switcher')) {
+    const dd = document.getElementById('lang-dropdown');
+    if (dd) dd.classList.remove('open');
+  }
+});
+
+function openSvcByKey(key) {
+  const d = SVC_DATA[key];
+  const T = TRANSLATIONS[currentLang];
+  openSvc(T[d.cat], T['svc_' + key + '_name'], d.src, d.type, T['svc_' + key + '_desc']);
+}
+
+(function initLang() {
+  const saved = localStorage.getItem('lang') || 'tr';
+  switchLang(saved);
+})();
+</script>
+</body>
+</html>
